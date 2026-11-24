@@ -21,6 +21,7 @@ public class AddPetActivity extends AppCompatActivity {
     private EditText etName;
     private EditText etSpecies;
     private EditText etAge;
+    private MaterialButton btnBack;
     private MaterialButton btnSave;
 
     @Override
@@ -45,7 +46,11 @@ public class AddPetActivity extends AppCompatActivity {
         etName = findViewById(R.id.etPetName);
         etSpecies = findViewById(R.id.etPetSpecies);
         etAge = findViewById(R.id.etPetAge);
+        btnBack = findViewById(R.id.btnBack);
         btnSave = findViewById(R.id.btnSavePet);
+
+        // Level 2 UX: explicit back button; same result as system/gesture back.
+        btnBack.setOnClickListener(v -> finish());
 
         btnSave.setOnClickListener(v -> savePet());
     }

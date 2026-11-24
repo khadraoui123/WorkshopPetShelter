@@ -1,6 +1,8 @@
 // E:\WorkshopPetShelter\app\src\main\java\com\example\workshoppetshelter\PetDetailsActivity.java
 package com.example.workshoppetshelter;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -26,6 +28,7 @@ import java.util.Locale;
  * Phase 8.5: role is a String carried in "user_role" ("ADMIN" == Role.ADMIN.name()).
  *            Admin-only delete, strict button projection, deny-by-default role check.
  * Level 1 UX: coloured Toasts only; no state or navigation logic changed.
+ * Level 2 UX: explicit Back button and native ACTION_SEND sharing.
  */
 public class PetDetailsActivity extends AppCompatActivity {
 
@@ -36,12 +39,15 @@ public class PetDetailsActivity extends AppCompatActivity {
     private long userId;
     private String userRole;
     private boolean isAdmin;
+    private Pet pet;
 
     private TextView tvEmoji;
     private TextView tvTitle;
     private TextView tvInfo;
     private TextView tvStatus;
     private TextView tvRequestedBy;
+    private MaterialButton btnBack;
+    private MaterialButton btnShare;
     private MaterialButton btnRequestAdoption;
     private MaterialButton btnApprove;
     private MaterialButton btnReject;
@@ -65,12 +71,17 @@ public class PetDetailsActivity extends AppCompatActivity {
         tvInfo = findViewById(R.id.tvDetailsInfo);
         tvStatus = findViewById(R.id.tvDetailsStatus);
         tvRequestedBy = findViewById(R.id.tvDetailsRequestedBy);
+        btnBack = findViewById(R.id.btnBack);
+        btnShare = findViewById(R.id.btnShare);
         btnRequestAdoption = findViewById(R.id.btnRequestAdoption);
         btnApprove = findViewById(R.id.btnApprove);
         btnReject = findViewById(R.id.btnReject);
         btnDelete = findViewById(R.id.btnDelete);
 
-        Pet pet = db.getPetById(petId);
+        btnBack.setOnClickListener(v -> finish());
+        btnShare.setOnClickListener(v -> sharePet());
+
+        pet = db.getPetById(petId);
         if (pet == null) {
             showToast("Animal introuvable.", false);
             finish();
@@ -178,6 +189,29 @@ public class PetDetailsActivity extends AppCompatActivity {
                         })
                         .setNegativeButton("Annuler", null)
                         .show());
+    }
+
+    /** Level 2 UX: native Android share sheet; no external library and no DB write. */
+    private void sharePet() {
+        if (pet == null) {
+            showToast("Animal introuvable.", false);
+            return;
+        }
+
+        String name = pet.getName() == null ? "Animal" : pet.getName();
+        String species = pet.getSpecies() == null ? "—" : pet.getSpecies();
+        String shareText = "Découvrez " + name + " (" + species + ") au Refuge des Animaux ! 🐾";
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Découvrez cet animal");
+
+        try {
+            startActivity(Intent.createChooser(shareIntent, "Partager via"));
+        } catch (ActivityNotFoundException e) {
+            showToast("Aucune application de partage disponible.", false);
+        }
     }
 
     /** Level 1 UX: one coloured Toast style for the whole screen. */
