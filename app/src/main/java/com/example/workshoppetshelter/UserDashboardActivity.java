@@ -16,6 +16,7 @@ import java.util.List;
 /**
  * Phase 7: adopter dashboard. Pet rows open the real details screen.
  * Phase 8: empty-state messages are toggled beside each list.
+ * Phase 8.5: every outgoing navigation carries user_role = "USER" plus user_id.
  */
 public class UserDashboardActivity extends AppCompatActivity {
 
@@ -59,7 +60,7 @@ public class UserDashboardActivity extends AppCompatActivity {
         Intent intent = new Intent(this, PetDetailsActivity.class);
         intent.putExtra("pet_id", pet.getId());
         intent.putExtra("user_id", userId);
-        intent.putExtra("is_admin", false);
+        intent.putExtra("user_role", Role.USER.name());
         startActivity(intent);
     }
 
@@ -72,7 +73,6 @@ public class UserDashboardActivity extends AppCompatActivity {
         lvAvailablePets.setAdapter(new PetAdapter(this, available));
         lvMyRequests.setAdapter(new PetAdapter(this, requests));
 
-        // Phase 8 polish only: no change to what data is loaded or where it goes.
         tvEmptyAvailable.setVisibility(available.isEmpty() ? View.VISIBLE : View.GONE);
         tvEmptyRequests.setVisibility(requests.isEmpty() ? View.VISIBLE : View.GONE);
     }

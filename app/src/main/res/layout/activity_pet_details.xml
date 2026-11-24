@@ -87,6 +87,18 @@
             android:textColor="@color/accent"
             android:visibility="gone" />
 
+        <!-- Phase 8.5: admin-only destructive action. Hidden until Java proves role == ADMIN. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDelete"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Supprimer l'animal"
+            android:textAllCaps="false"
+            android:textColor="@color/accent"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 </ScrollView>

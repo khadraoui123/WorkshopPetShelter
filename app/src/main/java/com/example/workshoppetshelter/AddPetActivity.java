@@ -21,6 +21,18 @@ public class AddPetActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /*
+         * Phase 8.5 defense in depth: check the role BEFORE inflating any UI.
+         * "ADMIN" is Role.ADMIN.name(). Deny by default: null/"" is rejected too.
+         */
+        String userRole = getIntent().getStringExtra("user_role");
+        if (!"ADMIN".equals(userRole)) {
+            Toast.makeText(this, "Accès refusé. Réservé aux administrateurs.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_add_pet);
 
         db = new UserDbHelper(this);

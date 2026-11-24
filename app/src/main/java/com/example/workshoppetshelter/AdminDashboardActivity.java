@@ -17,6 +17,7 @@ import java.util.List;
  * Phase 7: manager dashboard. Pet rows open details in admin mode; the add button
  * opens the real AddPetActivity.
  * Phase 8: empty-state messages are toggled beside each list.
+ * Phase 8.5: every outgoing navigation carries user_role = "ADMIN".
  */
 public class AdminDashboardActivity extends AppCompatActivity {
 
@@ -54,11 +55,15 @@ public class AdminDashboardActivity extends AppCompatActivity {
             Pet pet = (Pet) parent.getItemAtPosition(position);
             Intent intent = new Intent(this, PetDetailsActivity.class);
             intent.putExtra("pet_id", pet.getId());
-            intent.putExtra("is_admin", true);
+            intent.putExtra("user_role", Role.ADMIN.name());
             startActivity(intent);
         });
 
-        btnAddPet.setOnClickListener(v -> startActivity(new Intent(this, AddPetActivity.class)));
+        btnAddPet.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddPetActivity.class);
+            intent.putExtra("user_role", Role.ADMIN.name());
+            startActivity(intent);
+        });
 
         btnLogout.setOnClickListener(v -> finish());
     }
@@ -72,7 +77,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         lvAllPets.setAdapter(new PetAdapter(this, pets));
         lvUsers.setAdapter(new UserAdapter(this, users));
 
-        // Phase 8 polish only: no change to what data is loaded or where it goes.
         tvEmptyPets.setVisibility(pets.isEmpty() ? View.VISIBLE : View.GONE);
         tvEmptyUsers.setVisibility(users.isEmpty() ? View.VISIBLE : View.GONE);
     }

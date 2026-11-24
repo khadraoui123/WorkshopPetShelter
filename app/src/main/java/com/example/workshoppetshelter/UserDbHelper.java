@@ -93,12 +93,17 @@ public class UserDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_USERS);
         // Admin must exist after the users table and before any pet that could reference a user.
-        insertAccount(db, "Administrateur Refuge", "admin@refuge.local", "Admin123!", Role.ADMIN);
+        // Phase 8.5: presentation account for the professor.
+        insertAccount(db, "Wajih Khadraoui", "khadraouiwajih3@gmail.com", "wajih@123", Role.ADMIN);
 
         db.execSQL(CREATE_PETS);
         insertDefaultPet(db, "Rex", "Chien", 3);
         insertDefaultPet(db, "Minou", "Chat", 2);
         insertDefaultPet(db, "Bunny", "Lapin", 1);
+        // Phase 8.5: three extra seed pets for the demo (6 total).
+        insertDefaultPet(db, "Luna", "Chat", 4);
+        insertDefaultPet(db, "Max", "Chien", 5);
+        insertDefaultPet(db, "Coco", "Perroquet", 2);
     }
 
     @Override
