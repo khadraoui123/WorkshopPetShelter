@@ -1,0 +1,87 @@
+<!-- E:\WorkshopPetShelter\app\src\main\res\layout\activity_main.xml -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Phase 1 theme row: kept unchanged so the light/dark toggle still works. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/title_main"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textColor="@color/text_primary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonToggleTheme"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mode Sombre"
+                android:textColor="@color/accent"
+                app:strokeColor="@color/accent" />
+
+        </LinearLayout>
+
+        <!-- Phase 4: login form. IDs must match MainActivity.findViewById calls. -->
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:autofillHints="emailAddress"
+            android:hint="Adresse e-mail"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/accent" />
+
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:autofillHints="password"
+            android:hint="Mot de passe"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/accent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Se connecter"
+            android:textAllCaps="false"
+            app:backgroundTint="@color/accent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGoRegister"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Créer un compte"
+            android:textAllCaps="false"
+            android:textColor="@color/accent" />
+
+    </LinearLayout>
+
+</ScrollView>

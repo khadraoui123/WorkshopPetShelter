@@ -1,0 +1,20 @@
+# E:\WorkshopPetShelter\.gitignore
+
+# Gradle build outputs and local cache
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local SDK / IDE configuration (never commit absolute paths)
+local.properties
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Android Studio captures and native build outputs
+/captures
+.externalNativeBuild/
+.cxx/

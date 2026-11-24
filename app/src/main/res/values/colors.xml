@@ -1,0 +1,7 @@
+<!-- E:\WorkshopPetShelter\app\src\main\res\values\colors.xml -->
+<resources>
+    <color name="app_background">#FFF8F0</color>
+    <color name="text_primary">#3E2723</color>
+    <color name="accent">#6D4C41</color>
+    <color name="ic_launcher_background">#6D4C41</color>
+</resources>

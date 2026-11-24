@@ -1,0 +1,9 @@
+<!-- E:\WorkshopPetShelter\app\src\main\res\values-night\themes.xml -->
+<resources>
+    <!--
+        Night-qualified override hook. The DayNight Material3 parent already supplies
+        dark colors, so no items are needed yet; add explicit overrides here in
+        later phases if the design requires them.
+    -->
+    <style name="Theme.WorkshopPetShelter" parent="Theme.Material3.DayNight.NoActionBar" />
+</resources>

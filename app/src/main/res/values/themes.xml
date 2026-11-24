@@ -1,0 +1,8 @@
+<!-- E:\WorkshopPetShelter\app\src\main\res\values\themes.xml -->
+<resources>
+    <!--
+        Material3 DayNight resolves light/dark colors automatically from the system
+        uiMode. No SharedPreferences logic is added until a later phase.
+    -->
+    <style name="Theme.WorkshopPetShelter" parent="Theme.Material3.DayNight.NoActionBar" />
+</resources>
