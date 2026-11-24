@@ -8,14 +8,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WorkshopPetShelter">
 
+        <!-- Level 1: the splash is the single LAUNCHER entry point. -->
         <activity
-            android:name=".MainActivity"
+            android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Still exported for explicit in-app navigation, but no longer a launcher. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
 
         <!-- Phase 4 placeholders: internal navigation only, so exported="false". -->
         <activity

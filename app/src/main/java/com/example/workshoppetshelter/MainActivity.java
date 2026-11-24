@@ -5,11 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Patterns;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -69,9 +74,11 @@ public class MainActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         btnGoRegister = findViewById(R.id.btnGoRegister);
 
+        // Level 1 UX: eye icon reveals/hides the password. No validation logic touched.
+        setupPasswordVisibilityToggle(etPassword);
+
         btnLogin.setOnClickListener(v -> login());
 
-        // RegisterActivity is only a placeholder in Phase 4; it will be replaced in Phase 5.
         btnGoRegister.setOnClickListener(v ->
                 startActivity(new Intent(this, RegisterActivity.class)));
     }
@@ -96,13 +103,72 @@ public class MainActivity extends AppCompatActivity {
         themeToggleButton.setText(isDark ? "Mode Sombre" : "Mode Clair");
     }
 
-    /** Phase 8 polish: dismiss the keyboard using the currently focused field's window token. */
-    private void hideKeyboard(View view) {
+    /**
+     * Level 1 UX: toggles the password TransformationMethod when the end drawable is tapped.
+     * Uses getCompoundDrawablesRelative() so "end" is correct in LTR and RTL layouts.
+     */
+    private void setupPasswordVisibilityToggle(EditText field) {
+        field.setOnTouchListener((v, event) -> {
+            if (event.getAction() != MotionEvent.ACTION_UP) {
+                return false;
+            }
+
+            Drawable[] drawables = field.getCompoundDrawablesRelative();
+            if (drawables.length < 3 || drawables[2] == null) {
+                return false;
+            }
+
+            int iconWidth = drawables[2].getBounds().width();
+            if (iconWidth <= 0) {
+                return false;
+            }
+
+            int rightLimit = field.getWidth() - field.getPaddingEnd();
+            int leftLimit = rightLimit - iconWidth;
+            boolean insideIcon = event.getX() >= leftLimit && event.getX() <= rightLimit
+                    && event.getY() >= 0 && event.getY() <= field.getHeight();
+            if (!insideIcon) {
+                return false; // Let the EditText keep normal focus/cursor behaviour.
+            }
+
+            if (field.getTransformationMethod() instanceof PasswordTransformationMethod) {
+                field.setTransformationMethod(null);
+            } else {
+                field.setTransformationMethod(new PasswordTransformationMethod());
+            }
+            field.setSelection(field.getText().length());
+            return true; // Consumed: do not also move the cursor.
+        });
+    }
+
+    /** Level 1 UX: dismiss the keyboard using whatever view currently has focus. */
+    private void hideKeyboard() {
+        View view = getCurrentFocus();
+        if (view == null) {
+            return;
+        }
         InputMethodManager imm =
                 (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    /** Level 1 UX: one coloured Toast style for the whole screen. */
+    @SuppressWarnings("deprecation")
+    private void showToast(String msg, boolean isSuccess) {
+        Toast toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+        View v = toast.getView();
+        if (v != null) {
+            v.setBackgroundResource(R.drawable.toast_bg);
+            TextView text = v.findViewById(android.R.id.message);
+            if (text != null) {
+                text.setTextColor(isSuccess
+                        ? Color.parseColor("#4CAF50")
+                        : Color.parseColor("#F44336"));
+            }
+        }
+        toast.show();
     }
 
     /** Validates input, delegates to the Phase 3 database layer, then routes by role. */
@@ -114,26 +180,24 @@ public class MainActivity extends AppCompatActivity {
         if (email.isEmpty()
                 || !Patterns.EMAIL_ADDRESS.matcher(email).matches()
                 || password.isEmpty()) {
-            Toast.makeText(this, "Vérifiez l'e-mail et le mot de passe.", Toast.LENGTH_SHORT).show();
+            showToast("Vérifiez l'e-mail et le mot de passe.", false);
             return;
         }
 
-        // Phase 8: keyboard only closes once the form is valid; errors keep focus for correction.
-        hideKeyboard(etPassword);
+        // Keyboard only closes once the form is valid; errors keep focus for correction.
+        hideKeyboard();
 
         UserProfile user = db.login(email, password);
         if (user == null) {
             // Generic message: do not reveal whether the email exists.
-            Toast.makeText(this, "Identifiants incorrects.", Toast.LENGTH_SHORT).show();
+            showToast("Identifiants incorrects.", false);
             return;
         }
 
         Intent intent;
         if (user.getRole() == Role.ADMIN) {
-            // Placeholder in Phase 4; replaced by the real admin screens in Phase 6.
             intent = new Intent(this, AdminDashboardActivity.class);
         } else {
-            // Placeholder in Phase 4; replaced by the real user screens in Phase 6.
             intent = new Intent(this, UserDashboardActivity.class);
         }
 

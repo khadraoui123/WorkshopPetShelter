@@ -25,7 +25,7 @@ import java.util.Locale;
  * Phase 8: confirmation dialog, single-shot buttons, emoji contentDescription.
  * Phase 8.5: role is a String carried in "user_role" ("ADMIN" == Role.ADMIN.name()).
  *            Admin-only delete, strict button projection, deny-by-default role check.
- * No SQL, crypto, or navigation logic was changed.
+ * Level 1 UX: coloured Toasts only; no state or navigation logic changed.
  */
 public class PetDetailsActivity extends AppCompatActivity {
 
@@ -72,7 +72,7 @@ public class PetDetailsActivity extends AppCompatActivity {
 
         Pet pet = db.getPetById(petId);
         if (pet == null) {
-            Toast.makeText(this, "Animal introuvable.", Toast.LENGTH_SHORT).show();
+            showToast("Animal introuvable.", false);
             finish();
             return;
         }
@@ -133,18 +133,14 @@ public class PetDetailsActivity extends AppCompatActivity {
             // Single-shot guard: a second tap cannot reach the DB write.
             btnRequestAdoption.setEnabled(false);
             boolean ok = db.requestAdoption(petId, userId);
-            Toast.makeText(this,
-                    ok ? "Demande envoyée !" : "Cet animal n'est plus disponible.",
-                    Toast.LENGTH_SHORT).show();
+            showToast(ok ? "Demande envoyée !" : "Cet animal n'est plus disponible.", ok);
             finish();
         });
 
         btnApprove.setOnClickListener(v -> {
             btnApprove.setEnabled(false);
             boolean ok = db.approveAdoption(petId);
-            Toast.makeText(this,
-                    ok ? "Adoption approuvée !" : "Cet animal n'est plus disponible.",
-                    Toast.LENGTH_SHORT).show();
+            showToast(ok ? "Adoption approuvée !" : "Cet animal n'est plus disponible.", ok);
             finish();
         });
 
@@ -160,9 +156,7 @@ public class PetDetailsActivity extends AppCompatActivity {
                         .setPositiveButton("Oui", (dialog, which) -> {
                             btnReject.setEnabled(false);
                             boolean ok = db.rejectAdoption(petId);
-                            Toast.makeText(this,
-                                    ok ? "Demande refusée." : "Cet animal n'est plus disponible.",
-                                    Toast.LENGTH_SHORT).show();
+                            showToast(ok ? "Demande refusée." : "Cet animal n'est plus disponible.", ok);
                             finish();
                         })
                         .setNegativeButton("Annuler", null)
@@ -179,13 +173,28 @@ public class PetDetailsActivity extends AppCompatActivity {
                         .setPositiveButton("Oui", (dialog, which) -> {
                             btnDelete.setEnabled(false);
                             boolean ok = db.deletePet(petId);
-                            Toast.makeText(this,
-                                    ok ? "Animal supprimé." : "Animal introuvable.",
-                                    Toast.LENGTH_SHORT).show();
+                            showToast(ok ? "Animal supprimé." : "Animal introuvable.", ok);
                             finish();
                         })
                         .setNegativeButton("Annuler", null)
                         .show());
+    }
+
+    /** Level 1 UX: one coloured Toast style for the whole screen. */
+    @SuppressWarnings("deprecation")
+    private void showToast(String msg, boolean isSuccess) {
+        Toast toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+        View v = toast.getView();
+        if (v != null) {
+            v.setBackgroundResource(R.drawable.toast_bg);
+            TextView text = v.findViewById(android.R.id.message);
+            if (text != null) {
+                text.setTextColor(isSuccess
+                        ? Color.parseColor("#4CAF50")
+                        : Color.parseColor("#F44336"));
+            }
+        }
+        toast.show();
     }
 
     private String labelForStatus(String status) {

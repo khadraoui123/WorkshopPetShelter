@@ -1,8 +1,13 @@
 // E:\WorkshopPetShelter\app\src\main\java\com\example\workshoppetshelter\AddPetActivity.java
 package com.example.workshoppetshelter;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +33,7 @@ public class AddPetActivity extends AppCompatActivity {
          */
         String userRole = getIntent().getStringExtra("user_role");
         if (!"ADMIN".equals(userRole)) {
-            Toast.makeText(this, "Accès refusé. Réservé aux administrateurs.", Toast.LENGTH_SHORT).show();
+            showToast("Accès refusé. Réservé aux administrateurs.", false);
             finish();
             return;
         }
@@ -45,13 +50,43 @@ public class AddPetActivity extends AppCompatActivity {
         btnSave.setOnClickListener(v -> savePet());
     }
 
+    /** Level 1 UX: dismiss the keyboard using whatever view currently has focus. */
+    private void hideKeyboard() {
+        View view = getCurrentFocus();
+        if (view == null) {
+            return;
+        }
+        InputMethodManager imm =
+                (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    /** Level 1 UX: one coloured Toast style for the whole screen. */
+    @SuppressWarnings("deprecation")
+    private void showToast(String msg, boolean isSuccess) {
+        Toast toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+        View v = toast.getView();
+        if (v != null) {
+            v.setBackgroundResource(R.drawable.toast_bg);
+            TextView text = v.findViewById(android.R.id.message);
+            if (text != null) {
+                text.setTextColor(isSuccess
+                        ? Color.parseColor("#4CAF50")
+                        : Color.parseColor("#F44336"));
+            }
+        }
+        toast.show();
+    }
+
     private void savePet() {
         String name = etName.getText().toString().trim();
         String species = etSpecies.getText().toString().trim();
         String ageText = etAge.getText().toString().trim();
 
         if (name.isEmpty() || species.isEmpty() || ageText.isEmpty()) {
-            Toast.makeText(this, "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
+            showToast("Veuillez remplir tous les champs.", false);
             return;
         }
 
@@ -59,27 +94,30 @@ public class AddPetActivity extends AppCompatActivity {
         try {
             age = Integer.parseInt(ageText);
         } catch (NumberFormatException e) {
-            Toast.makeText(this, "Âge invalide.", Toast.LENGTH_SHORT).show();
+            showToast("Âge invalide.", false);
             return;
         }
 
         if (age < 0) {
-            Toast.makeText(this, "Âge invalide.", Toast.LENGTH_SHORT).show();
+            showToast("Âge invalide.", false);
             return;
         }
+
+        // Keyboard only closes once the form is valid; errors keep focus for correction.
+        hideKeyboard();
 
         try {
             long id = db.addPet(name, species, age);
             if (id == -1L) {
-                Toast.makeText(this, "Erreur lors de l'ajout.", Toast.LENGTH_SHORT).show();
+                showToast("Erreur lors de l'ajout.", false);
                 return;
             }
         } catch (Exception e) {
-            Toast.makeText(this, "Erreur lors de l'ajout.", Toast.LENGTH_SHORT).show();
+            showToast("Erreur lors de l'ajout.", false);
             return;
         }
 
-        Toast.makeText(this, "Animal ajouté !", Toast.LENGTH_SHORT).show();
+        showToast("Animal ajouté !", true);
         finish();
     }
 }
