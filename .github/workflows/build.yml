@@ -24,7 +24,12 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          packages: 'tools platform-tools platforms;android-34 build-tools;34.0.0'
+          # The deprecated "tools" package no longer exists in sdkmanager.
+          # Skip the action's defaults and install only what AGP 8.5.2 needs.
+          packages: ''
+
+      - name: Install Android SDK components
+        run: sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
