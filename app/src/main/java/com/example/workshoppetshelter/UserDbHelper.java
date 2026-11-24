@@ -296,6 +296,32 @@ public class UserDbHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Level 3: SQL aggregation. The database counts matching rows and returns ONE value,
+     * so we do not load every pet into Java memory just to call size(). A missing user_id
+     * simply matches no rows and returns 0.
+     */
+    public int countAdoptedPetsByUser(long userId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.rawQuery(
+                "SELECT COUNT(*) FROM pets WHERE requested_by = ? AND status = 'ADOPTED'",
+                new String[]{String.valueOf(userId)});
+        int count = 0;
+        if (c.moveToFirst()) {
+            count = c.getInt(0);
+        }
+        c.close();
+        return count;
+    }
+
+    /**
+     * Level 3: admin adoption history. Reuses the shared JOIN query instead of copying
+     * its aliases, status handling and ordering (DRY).
+     */
+    public List<Pet> getAdoptedPets() {
+        return queryPets("status = ?", new String[]{"ADOPTED"});
+    }
+
+    /**
      * Shared JOIN query. 'selection' is ALWAYS one of our own constant strings containing
      * placeholders; user values travel in 'args' and are never concatenated into SQL.
      */

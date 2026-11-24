@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,6 +25,7 @@ import java.util.List;
  * Phase 8: empty-state messages are toggled beside each list.
  * Phase 8.5: every outgoing navigation carries user_role = "USER" plus user_id.
  * Level 2: PetAdapter's built-in ArrayAdapter filter searches name + species.
+ * Level 3: "Mon Profil" routes to ProfileActivity; lists fade in after data load.
  */
 public class UserDashboardActivity extends AppCompatActivity {
 
@@ -35,6 +38,7 @@ public class UserDashboardActivity extends AppCompatActivity {
     private TextView tvEmptyRequests;
     private EditText etSearchAvailable;
     private MaterialButton btnLogout;
+    private MaterialButton btnProfile;
 
     private PetAdapter petAdapter;
 
@@ -61,6 +65,16 @@ public class UserDashboardActivity extends AppCompatActivity {
 
         db = new UserDbHelper(this);
 
+        /*
+         * Level 3: the current login screen passes id/name/role but not the email.
+         * Read the extra when present (forward-compatible), otherwise resolve it with
+         * the DB helper's existing public method. No new SQL method is introduced.
+         */
+        String emailExtra = getIntent().getStringExtra("user_email");
+        final String userEmail = (emailExtra == null || emailExtra.isEmpty())
+                ? resolveEmailForUser(userId)
+                : emailExtra;
+
         tvGreeting = findViewById(R.id.tvGreeting);
         lvAvailablePets = findViewById(R.id.lvAvailablePets);
         lvMyRequests = findViewById(R.id.lvMyRequests);
@@ -68,6 +82,7 @@ public class UserDashboardActivity extends AppCompatActivity {
         tvEmptyRequests = findViewById(R.id.tvEmptyRequests);
         etSearchAvailable = findViewById(R.id.etSearchAvailable);
         btnLogout = findViewById(R.id.btnLogout);
+        btnProfile = findViewById(R.id.btnProfile);
 
         tvGreeting.setText("Bonjour " + (userName == null ? "" : userName) + " 🐾");
 
@@ -78,7 +93,30 @@ public class UserDashboardActivity extends AppCompatActivity {
 
         setupSearch();
 
+        btnProfile.setOnClickListener(v -> openProfile(userName, userEmail));
         btnLogout.setOnClickListener(v -> finish());
+    }
+
+    /** Reuses the existing public user list; no SQL is added for this Level 3 route. */
+    private String resolveEmailForUser(long id) {
+        if (id < 0) {
+            return null;
+        }
+        for (UserProfile user : db.getAllUsers()) {
+            if (user.getId() == id) {
+                return user.getEmail();
+            }
+        }
+        return null;
+    }
+
+    /** Level 3: explicit extras requested by ProfileActivity. */
+    private void openProfile(String userName, String userEmail) {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra("user_id", userId);
+        intent.putExtra("user_name", userName);
+        intent.putExtra("user_email", userEmail);
+        startActivity(intent);
     }
 
     /** Level 2: ArrayAdapter's Filterable implementation does all the work in memory. */
@@ -150,6 +188,16 @@ public class UserDashboardActivity extends AppCompatActivity {
 
         updatePetEmptyState();
         tvEmptyRequests.setVisibility(requests.isEmpty() ? View.VISIBLE : View.GONE);
+
+        // Level 3: data is loaded and views are measured; now start the system fade-in.
+        startFadeIn(lvAvailablePets);
+        startFadeIn(lvMyRequests);
+    }
+
+    /** A fresh Animation instance per view avoids sharing mutable start-time state. */
+    private void startFadeIn(View view) {
+        Animation fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+        view.startAnimation(fadeIn);
     }
 
     private void updatePetEmptyState() {

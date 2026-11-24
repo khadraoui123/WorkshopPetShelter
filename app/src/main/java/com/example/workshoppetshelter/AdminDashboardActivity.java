@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,6 +26,7 @@ import java.util.List;
  * Phase 8: empty-state messages are toggled beside each list.
  * Phase 8.5: every outgoing navigation carries user_role = "ADMIN".
  * Level 2: only the pets list is filtered; the users list is never touched.
+ * Level 3: third section = adoption history; all lists fade in after data load.
  */
 public class AdminDashboardActivity extends AppCompatActivity {
 
@@ -31,8 +34,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
     private TextView tvGreeting;
     private ListView lvAllPets;
     private ListView lvUsers;
+    private ListView lvAdoptedPets;
     private TextView tvEmptyPets;
     private TextView tvEmptyUsers;
+    private TextView tvEmptyAdopted;
     private EditText etSearchPets;
     private MaterialButton btnAddPet;
     private MaterialButton btnLogout;
@@ -66,21 +71,20 @@ public class AdminDashboardActivity extends AppCompatActivity {
         tvGreeting = findViewById(R.id.tvGreeting);
         lvAllPets = findViewById(R.id.lvAllPets);
         lvUsers = findViewById(R.id.lvUsers);
+        lvAdoptedPets = findViewById(R.id.lvAdoptedPets);
         tvEmptyPets = findViewById(R.id.tvEmptyPets);
         tvEmptyUsers = findViewById(R.id.tvEmptyUsers);
+        tvEmptyAdopted = findViewById(R.id.tvEmptyAdopted);
         etSearchPets = findViewById(R.id.etSearchPets);
         btnAddPet = findViewById(R.id.btnAddPet);
         btnLogout = findViewById(R.id.btnLogout);
 
         tvGreeting.setText("Bonjour " + (userName == null ? "" : userName) + " — Gestionnaire");
 
-        lvAllPets.setOnItemClickListener((parent, view, position, id) -> {
-            Pet pet = (Pet) parent.getItemAtPosition(position);
-            Intent intent = new Intent(this, PetDetailsActivity.class);
-            intent.putExtra("pet_id", pet.getId());
-            intent.putExtra("user_role", Role.ADMIN.name());
-            startActivity(intent);
-        });
+        lvAllPets.setOnItemClickListener((parent, view, position, id) ->
+                openPetDetails((Pet) parent.getItemAtPosition(position)));
+        lvAdoptedPets.setOnItemClickListener((parent, view, position, id) ->
+                openPetDetails((Pet) parent.getItemAtPosition(position)));
 
         setupSearch();
 
@@ -91,6 +95,13 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
 
         btnLogout.setOnClickListener(v -> finish());
+    }
+
+    private void openPetDetails(Pet pet) {
+        Intent intent = new Intent(this, PetDetailsActivity.class);
+        intent.putExtra("pet_id", pet.getId());
+        intent.putExtra("user_role", Role.ADMIN.name());
+        startActivity(intent);
     }
 
     /** Level 2: ArrayAdapter's Filterable implementation does all the work in memory. */
@@ -131,6 +142,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
             users = new ArrayList<>();
         }
 
+        List<Pet> adopted = db.getAdoptedPets();
+        if (adopted == null) {
+            adopted = new ArrayList<>();
+        }
+
         /*
          * Give the adapter a COPY of the loaded data. ArrayAdapter.getFilter() saves its own
          * original-values snapshot, so our copy keeps the source list reusable and reversible.
@@ -144,6 +160,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
         lvAllPets.setAdapter(petAdapter);
         lvUsers.setAdapter(new UserAdapter(this, users));
 
+        // Fresh adapter + fresh list on every resume: no duplicate rows in the history.
+        lvAdoptedPets.setAdapter(new PetAdapter(this, adopted));
+
         // Re-apply a query that survived a rotation or a return from another screen.
         String query = etSearchPets.getText() == null
                 ? ""
@@ -154,6 +173,18 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         updatePetEmptyState();
         tvEmptyUsers.setVisibility(users.isEmpty() ? View.VISIBLE : View.GONE);
+        tvEmptyAdopted.setVisibility(adopted.isEmpty() ? View.VISIBLE : View.GONE);
+
+        // Level 3: data is loaded and views are measured; now start the system fade-in.
+        startFadeIn(lvAllPets);
+        startFadeIn(lvUsers);
+        startFadeIn(lvAdoptedPets);
+    }
+
+    /** A fresh Animation instance per view avoids sharing mutable start-time state. */
+    private void startFadeIn(View view) {
+        Animation fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+        view.startAnimation(fadeIn);
     }
 
     private void updatePetEmptyState() {

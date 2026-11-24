@@ -8,6 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
         android:orientation="vertical"
         android:padding="24dp">
 
@@ -94,7 +95,7 @@
             android:id="@+id/lvUsers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
             android:nestedScrollingEnabled="false" />
 
         <TextView
@@ -104,6 +105,34 @@
             android:gravity="center"
             android:padding="16dp"
             android:text="Aucun utilisateur."
+            android:textColor="@color/text_primary"
+            android:textStyle="italic"
+            android:visibility="gone" />
+
+        <!-- Level 3: third section, below the users list. -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Historique des adoptions"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ListView
+            android:id="@+id/lvAdoptedPets"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:nestedScrollingEnabled="false" />
+
+        <TextView
+            android:id="@+id/tvEmptyAdopted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="Aucune adoption pour le moment."
             android:textColor="@color/text_primary"
             android:textStyle="italic"
             android:visibility="gone" />

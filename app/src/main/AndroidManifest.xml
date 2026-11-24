@@ -47,6 +47,12 @@
             android:label="Ajouter un animal"
             android:exported="false" />
 
+        <!-- Level 3: user-only profile. Internal explicit intent, so exported="false". -->
+        <activity
+            android:name=".ProfileActivity"
+            android:label="Mon Profil"
+            android:exported="false" />
+
     </application>
 
 </manifest>

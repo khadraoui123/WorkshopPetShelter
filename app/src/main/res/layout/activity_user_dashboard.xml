@@ -8,6 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
         android:orientation="vertical"
         android:padding="24dp">
 
@@ -27,6 +28,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Déconnexion"
+            android:textColor="@color/accent" />
+
+        <!-- Level 3: user-only route to the profile screen. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnProfile"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Mon Profil"
             android:textColor="@color/accent" />
 
         <TextView
