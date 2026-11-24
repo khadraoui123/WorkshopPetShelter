@@ -42,4 +42,15 @@ public final class Pet {
     public String getRequestedBy() {
         return requestedBy;
     }
+
+    /**
+     * Level 2: ArrayAdapter's built-in Filter matches against toString().
+     * Returning name + species lets one search find "Rex" and "Chat" alike.
+     */
+    @Override
+    public String toString() {
+        return (getName() == null ? "" : getName())
+                + " "
+                + (getSpecies() == null ? "" : getSpecies());
+    }
 }

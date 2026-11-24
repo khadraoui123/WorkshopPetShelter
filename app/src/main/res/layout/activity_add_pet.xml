@@ -12,22 +12,21 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- Level 2: explicit, accessible back button (no ActionBar in this app). -->
-        <com.google.android.material.button.MaterialButton
+        <!-- Level 2: visible, accessible back control for a NoActionBar theme. -->
+        <ImageButton
             android:id="@+id/btnBack"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Retour"
-            android:text="← Retour"
-            android:textAllCaps="false"
-            android:textColor="@color/accent" />
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="@color/accent" />
 
         <TextView
             android:id="@+id/tvAddPetTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="Ajouter un animal"
             android:textColor="@color/text_primary"
             android:textSize="24sp"

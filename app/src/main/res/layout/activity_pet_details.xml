@@ -12,23 +12,22 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- Level 2: explicit, accessible back button (no ActionBar in this app). -->
-        <com.google.android.material.button.MaterialButton
+        <!-- Level 2: visible, accessible back control for a NoActionBar theme. -->
+        <ImageButton
             android:id="@+id/btnBack"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Retour"
-            android:text="← Retour"
-            android:textAllCaps="false"
-            android:textColor="@color/accent" />
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="@color/accent" />
 
         <!-- Phase 8: dedicated emoji view so TalkBack can announce the species (set in Java). -->
         <TextView
             android:id="@+id/tvDetailsEmoji"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:contentDescription="Animal"
             android:text="🐾"
             android:textSize="32sp" />
@@ -41,18 +40,6 @@
             android:textColor="@color/text_primary"
             android:textSize="24sp"
             android:textStyle="bold" />
-
-        <!-- Level 2: native Android sharing, placed directly under the pet name. -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnShare"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:contentDescription="Partager"
-            android:text="Partager"
-            android:textAllCaps="false"
-            android:textColor="@color/accent" />
 
         <TextView
             android:id="@+id/tvDetailsInfo"
@@ -80,11 +67,21 @@
             android:textSize="14sp"
             android:visibility="gone" />
 
+        <!-- Level 2: native Android sharing; visible for both Admin and User. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnShare"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Partager"
+            android:textAllCaps="false"
+            app:backgroundTint="@color/accent" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRequestAdoption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="12dp"
             android:text="Demander l'adoption"
             android:textAllCaps="false"
             android:visibility="gone"

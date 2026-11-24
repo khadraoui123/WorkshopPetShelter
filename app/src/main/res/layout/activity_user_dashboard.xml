@@ -11,25 +11,10 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- Level 2: search bar for the AVAILABLE pets list only. -->
-        <EditText
-            android:id="@+id/etSearch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableStart="@android:drawable/ic_menu_search"
-            android:drawablePadding="8dp"
-            android:hint="Rechercher un animal..."
-            android:inputType="text"
-            android:maxLines="1"
-            android:paddingStart="12dp"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/accent" />
-
         <TextView
             android:id="@+id/tvGreeting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:text="Bonjour 🐾"
             android:textColor="@color/text_primary"
             android:textSize="22sp"
@@ -53,11 +38,27 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
+        <!-- Level 2: search bar directly above the AVAILABLE pets ListView. -->
+        <EditText
+            android:id="@+id/etSearchAvailable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:drawablePadding="8dp"
+            android:hint="Rechercher un animal..."
+            android:inputType="text"
+            android:paddingStart="12dp"
+            android:singleLine="true"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/accent" />
+
         <!-- ListView inside ScrollView: wrap_content + nestedScrollingEnabled=false is mandatory. -->
         <ListView
             android:id="@+id/lvAvailablePets"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:nestedScrollingEnabled="false" />
 
         <!-- Phase 8: shown only when the corresponding list is empty. -->

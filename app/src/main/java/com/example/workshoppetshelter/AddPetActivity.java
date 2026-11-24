@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +22,7 @@ public class AddPetActivity extends AppCompatActivity {
     private EditText etName;
     private EditText etSpecies;
     private EditText etAge;
-    private MaterialButton btnBack;
+    private ImageButton btnBack;
     private MaterialButton btnSave;
 
     @Override
@@ -49,7 +50,7 @@ public class AddPetActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         btnSave = findViewById(R.id.btnSavePet);
 
-        // Level 2 UX: explicit back button; same result as system/gesture back.
+        // Level 2: explicit visible back control; same result as system/gesture back.
         btnBack.setOnClickListener(v -> finish());
 
         btnSave.setOnClickListener(v -> savePet());
