@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         String password = etPassword.getText().toString();
 
         if (email.isEmpty()
-                || !Patterns.EMAIL_ADDRESS.matches(email)
+                || !Patterns.EMAIL_ADDRESS.matcher(email).matches()
                 || password.isEmpty()) {
             Toast.makeText(this, "Vérifiez l'e-mail et le mot de passe.", Toast.LENGTH_SHORT).show();
             return;

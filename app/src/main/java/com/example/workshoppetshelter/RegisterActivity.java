@@ -68,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matches(email)) {
+        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(this, "Vérifiez l'adresse e-mail.", Toast.LENGTH_SHORT).show();
             return;
         }
