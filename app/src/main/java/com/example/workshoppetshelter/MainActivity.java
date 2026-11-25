@@ -36,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btnLogin;
     private MaterialButton btnGoRegister;
 
+    // Session management: separate from theme prefs.
+    private SessionManager sessionManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // PHASE 1 LOGIC: MUST stay BEFORE super.onCreate(). Do not move this block.
@@ -69,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
         // PHASE 4: all findViewById calls happen AFTER setContentView.
         db = new UserDbHelper(this);
+        sessionManager = new SessionManager(this);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
@@ -193,6 +197,9 @@ public class MainActivity extends AppCompatActivity {
             showToast("Identifiants incorrects.", false);
             return;
         }
+
+        // Remember Me: save ONLY after successful authentication.
+        sessionManager.saveSession(user.getId(), user.getFullName(), user.getRole().name());
 
         Intent intent;
         if (user.getRole() == Role.ADMIN) {

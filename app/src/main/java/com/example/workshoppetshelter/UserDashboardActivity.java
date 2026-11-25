@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
@@ -26,10 +27,12 @@ import java.util.List;
  * Phase 8.5: every outgoing navigation carries user_role = "USER" plus user_id.
  * Level 2: PetAdapter's built-in ArrayAdapter filter searches name + species.
  * Level 3: "Mon Profil" routes to ProfileActivity; lists fade in after data load.
+ * Session: corrupted intents are rejected; logout clears session and returns to login.
  */
 public class UserDashboardActivity extends AppCompatActivity {
 
     private UserDbHelper db;
+    private SessionManager sessionManager;
     private long userId;
     private TextView tvGreeting;
     private ListView lvAvailablePets;
@@ -58,9 +61,23 @@ public class UserDashboardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /*
+         * Session integrity: -1 means the intent is missing/corrupted. Bounce to login
+         * BEFORE inflating the dashboard, so no private data is rendered.
+         */
+        long incomingUserId = getIntent().getLongExtra("user_id", -1L);
+        if (incomingUserId == -1L) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_user_dashboard);
 
-        userId = getIntent().getLongExtra("user_id", -1L);
+        userId = incomingUserId;
+        sessionManager = new SessionManager(this);
+
         String userName = getIntent().getStringExtra("user_name");
 
         db = new UserDbHelper(this);
@@ -94,7 +111,23 @@ public class UserDashboardActivity extends AppCompatActivity {
         setupSearch();
 
         btnProfile.setOnClickListener(v -> openProfile(userName, userEmail));
-        btnLogout.setOnClickListener(v -> finish());
+        btnLogout.setOnClickListener(v -> confirmLogout());
+    }
+
+    /** Session: confirmed logout clears the session and returns to the login screen. */
+    private void confirmLogout() {
+        new AlertDialog.Builder(this)
+                .setTitle("Déconnexion")
+                .setMessage("Voulez-vous vraiment vous déconnecter ?")
+                .setPositiveButton("Oui", (dialog, which) -> {
+                    sessionManager.logout();
+                    // Explicit navigation is mandatory: finish() alone would let Splash
+                    // read a stale/cleared session and skip the login screen.
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                })
+                .setNegativeButton("Annuler", null)
+                .show();
     }
 
     /** Reuses the existing public user list; no SQL is added for this Level 3 route. */

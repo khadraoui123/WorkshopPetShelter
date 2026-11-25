@@ -9,16 +9,41 @@ import android.os.Looper;
 import androidx.appcompat.app.AppCompatActivity;
 
 /**
- * Level 1 UX: branded entry screen shown for 1500 ms before the login screen.
- * Navigation is unchanged: the splash simply replaces MainActivity as the LAUNCHER target.
+ * Level 1 UX: branded entry screen shown for 1500 ms.
+ * Session management: after the delay, Splash is the single routing decision point.
+ * It checks SessionManager and opens the right dashboard, or the login screen.
  */
 public class SplashActivity extends AppCompatActivity {
 
     private static final long SPLASH_DELAY_MS = 1500L;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final Runnable openMain = () -> {
-        startActivity(new Intent(this, MainActivity.class));
+    private SessionManager sessionManager;
+
+    private final Runnable openNextScreen = () -> {
+        Intent intent;
+
+        if (sessionManager.isLoggedIn()) {
+            long userId = sessionManager.getUserId();
+            String userName = sessionManager.getUserName();
+            String role = sessionManager.getRole();
+
+            // Deny by default: only the two known roles route to a dashboard.
+            if ("ADMIN".equals(role)) {
+                intent = new Intent(this, AdminDashboardActivity.class);
+            } else {
+                intent = new Intent(this, UserDashboardActivity.class);
+            }
+
+            // Same extras as MainActivity, so dashboards need no special session code.
+            intent.putExtra("user_id", userId);
+            intent.putExtra("user_name", userName);
+            intent.putExtra("user_role", role);
+        } else {
+            intent = new Intent(this, MainActivity.class);
+        }
+
+        startActivity(intent);
         finish(); // Never keep the splash on the back stack.
     };
 
@@ -27,14 +52,16 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        sessionManager = new SessionManager(this);
+
         // postDelayed schedules on the main looper; it never blocks the UI thread.
-        handler.postDelayed(openMain, SPLASH_DELAY_MS);
+        handler.postDelayed(openNextScreen, SPLASH_DELAY_MS);
     }
 
     @Override
     protected void onDestroy() {
         // Defensive: if the activity is destroyed early, do not leak a pending navigation.
-        handler.removeCallbacks(openMain);
+        handler.removeCallbacks(openNextScreen);
         super.onDestroy();
     }
 }
