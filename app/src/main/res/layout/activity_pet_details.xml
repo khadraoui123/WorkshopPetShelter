@@ -1,125 +1,121 @@
 <!-- E:\WorkshopPetShelter\app\src\main\res\layout\activity_pet_details.xml -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/app_background"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorSurface"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/title_pet_details" />
 
-        <!-- Level 2: visible, accessible back control for a NoActionBar theme. -->
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/back"
-            android:src="@android:drawable/ic_menu_revert"
-            app:tint="@color/accent" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-        <!-- Phase 8: dedicated emoji view so TalkBack can announce the species (set in Java). -->
-        <TextView
-            android:id="@+id/tvDetailsEmoji"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:contentDescription="@string/animal"
-            android:text="@string/pet_emoji"
-            android:textSize="32sp" />
-
-        <TextView
-            android:id="@+id/tvDetailsTitle"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/text_primary"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:padding="24dp">
 
-        <TextView
-            android:id="@+id/tvDetailsInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp" />
+            <!-- Phase 8: dedicated emoji view so TalkBack can announce the species (set in Java). -->
+            <TextView
+                android:id="@+id/tvDetailsEmoji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/animal"
+                android:text="@string/pet_emoji"
+                android:textSize="32sp" />
 
-        <TextView
-            android:id="@+id/tvDetailsStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tvDetailsInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/tvDetailsRequestedBy"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/tvDetailsStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-        <!-- Level 2: native Android sharing; visible for both Admin and User. -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnShare"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/share"
-            android:textAllCaps="false"
-            app:backgroundTint="@color/accent" />
+            <TextView
+                android:id="@+id/tvDetailsRequestedBy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:visibility="gone" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnRequestAdoption"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/request_adoption"
-            android:textAllCaps="false"
-            android:visibility="gone"
-            app:backgroundTint="@color/accent" />
+            <!-- Level 2: native Android sharing; visible for both Admin and User. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnShare"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/share"
+                android:textAllCaps="false"
+                app:backgroundTint="@color/accent" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnApprove"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/approve"
-            android:textAllCaps="false"
-            android:visibility="gone"
-            app:backgroundTint="@color/accent" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRequestAdoption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/request_adoption"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                app:backgroundTint="@color/accent" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnReject"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/reject"
-            android:textAllCaps="false"
-            android:textColor="@color/accent"
-            android:visibility="gone" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnApprove"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/approve"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                app:backgroundTint="@color/accent" />
 
-        <!-- Phase 8.5: admin-only destructive action. Hidden until Java proves role == ADMIN. -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDelete"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/delete_pet"
-            android:textAllCaps="false"
-            android:textColor="@color/accent"
-            android:visibility="gone" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReject"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/reject"
+                android:textAllCaps="false"
+                android:textColor="@color/accent"
+                android:visibility="gone" />
 
-    </LinearLayout>
+            <!-- Phase 8.5: admin-only destructive action. Hidden until Java proves role == ADMIN. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDelete"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/delete_pet"
+                android:textAllCaps="false"
+                android:textColor="@color/accent"
+                android:visibility="gone" />
 
-</ScrollView>
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

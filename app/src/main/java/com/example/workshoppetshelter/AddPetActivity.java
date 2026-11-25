@@ -7,12 +7,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 
 /** Phase 7: admin-only form that inserts a new pet through the Phase 3 helper. */
@@ -22,7 +22,6 @@ public class AddPetActivity extends AppCompatActivity {
     private EditText etName;
     private EditText etSpecies;
     private EditText etAge;
-    private ImageButton btnBack;
     private MaterialButton btnSave;
 
     @Override
@@ -43,16 +42,16 @@ public class AddPetActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_add_pet);
 
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> finish());
+
         db = new UserDbHelper(this);
 
         etName = findViewById(R.id.etPetName);
         etSpecies = findViewById(R.id.etPetSpecies);
         etAge = findViewById(R.id.etPetAge);
-        btnBack = findViewById(R.id.btnBack);
         btnSave = findViewById(R.id.btnSavePet);
-
-        // Level 2: explicit visible back control; same result as system/gesture back.
-        btnBack.setOnClickListener(v -> finish());
 
         btnSave.setOnClickListener(v -> savePet());
     }

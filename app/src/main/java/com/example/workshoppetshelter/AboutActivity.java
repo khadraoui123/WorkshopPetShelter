@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 
 /**
@@ -36,14 +37,16 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> finish());
+
         tvVersion = findViewById(R.id.tvVersion);
         loadVersion();
 
         MaterialButton btnContact = findViewById(R.id.btnContact);
         MaterialButton btnWebsite = findViewById(R.id.btnWebsite);
-        MaterialButton btnBack = findViewById(R.id.btnBack);
 
-        btnBack.setOnClickListener(v -> finish());
         btnContact.setOnClickListener(v -> openDialer());
         btnWebsite.setOnClickListener(v -> openWebsite());
     }

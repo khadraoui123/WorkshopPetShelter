@@ -16,19 +16,22 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Phase 7: manager dashboard. Pet rows open details in admin mode; the add button
+ * Phase 7: manager dashboard. Pet rows open details in admin mode; the FAB
  * opens the real AddPetActivity.
  * Phase 8: empty-state messages are toggled beside each list.
  * Phase 8.5: every outgoing navigation carries user_role = "ADMIN".
  * Level 2: only the pets list is filtered; the users list is never touched.
  * Level 3: third section = adoption history; all lists fade in after data load.
  * Session: corrupted intents are rejected; logout clears session and returns to login.
+ * Material 3: MaterialToolbar + FloatingActionButton replace the custom header and button.
  */
 public class AdminDashboardActivity extends AppCompatActivity {
 
@@ -42,7 +45,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
     private TextView tvEmptyUsers;
     private TextView tvEmptyAdopted;
     private EditText etSearchPets;
-    private MaterialButton btnAddPet;
+    private FloatingActionButton fabAddPet;
     private MaterialButton btnLogout;
 
     private PetAdapter petAdapter;
@@ -78,6 +81,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_admin_dashboard);
 
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> finish());
+
         sessionManager = new SessionManager(this);
 
         String userName = getIntent().getStringExtra("user_name");
@@ -92,7 +99,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         tvEmptyUsers = findViewById(R.id.tvEmptyUsers);
         tvEmptyAdopted = findViewById(R.id.tvEmptyAdopted);
         etSearchPets = findViewById(R.id.etSearchPets);
-        btnAddPet = findViewById(R.id.btnAddPet);
+        fabAddPet = findViewById(R.id.fabAddPet);
         btnLogout = findViewById(R.id.btnLogout);
 
         tvGreeting.setText(userName == null || userName.isEmpty()
@@ -106,7 +113,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         setupSearch();
 
-        btnAddPet.setOnClickListener(v -> {
+        fabAddPet.setOnClickListener(v -> {
             Intent intent = new Intent(this, AddPetActivity.class);
             intent.putExtra("user_role", Role.ADMIN.name());
             startActivity(intent);

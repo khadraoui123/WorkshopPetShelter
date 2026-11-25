@@ -6,13 +6,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 
 /**
@@ -27,8 +27,9 @@ import com.google.android.material.button.MaterialButton;
  * Phase 8.5: role is a String carried in "user_role" ("ADMIN" == Role.ADMIN.name()).
  *            Admin-only delete, strict button projection, deny-by-default role check.
  * Level 1 UX: coloured Toasts only; no state or navigation logic changed.
- * Level 2: explicit ImageButton back and native ACTION_SEND sharing.
+ * Level 2: MaterialToolbar back and native ACTION_SEND sharing.
  * i18n: every user-visible value is read from resources through PetLabels / getString.
+ * Material 3: the toolbar title is replaced dynamically with the pet's name.
  */
 public class PetDetailsActivity extends AppCompatActivity {
 
@@ -42,11 +43,9 @@ public class PetDetailsActivity extends AppCompatActivity {
     private Pet pet;
 
     private TextView tvEmoji;
-    private TextView tvTitle;
     private TextView tvInfo;
     private TextView tvStatus;
     private TextView tvRequestedBy;
-    private ImageButton btnBack;
     private MaterialButton btnShare;
     private MaterialButton btnRequestAdoption;
     private MaterialButton btnApprove;
@@ -59,6 +58,10 @@ public class PetDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pet_details);
 
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> finish());
+
         petId = getIntent().getLongExtra("pet_id", -1L);
         userId = getIntent().getLongExtra("user_id", -1L);
         userRole = getIntent().getStringExtra(EXTRA_USER_ROLE);
@@ -68,18 +71,15 @@ public class PetDetailsActivity extends AppCompatActivity {
         db = new UserDbHelper(this);
 
         tvEmoji = findViewById(R.id.tvDetailsEmoji);
-        tvTitle = findViewById(R.id.tvDetailsTitle);
         tvInfo = findViewById(R.id.tvDetailsInfo);
         tvStatus = findViewById(R.id.tvDetailsStatus);
         tvRequestedBy = findViewById(R.id.tvDetailsRequestedBy);
-        btnBack = findViewById(R.id.btnBack);
         btnShare = findViewById(R.id.btnShare);
         btnRequestAdoption = findViewById(R.id.btnRequestAdoption);
         btnApprove = findViewById(R.id.btnApprove);
         btnReject = findViewById(R.id.btnReject);
         btnDelete = findViewById(R.id.btnDelete);
 
-        btnBack.setOnClickListener(v -> finish());
         btnShare.setOnClickListener(v -> sharePet());
 
         pet = db.getPetById(petId);
@@ -95,12 +95,17 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     private void renderPet(Pet pet) {
+        // Dynamic title: the toolbar identifies the exact animal, not a generic label.
+        String title = pet.getName() == null || pet.getName().trim().isEmpty()
+                ? getString(R.string.animal)
+                : pet.getName();
+        getSupportActionBar().setTitle(title);
+
         String species = pet.getSpecies();
         tvEmoji.setText(PetLabels.emojiForSpecies(this, species));
         // TalkBack announces a localized species label, not an emoji name.
         tvEmoji.setContentDescription(PetLabels.labelForSpecies(this, species));
 
-        tvTitle.setText(pet.getName());
         String speciesLabel = species == null || species.trim().isEmpty()
                 ? getString(R.string.empty_value)
                 : PetLabels.labelForSpecies(this, species);

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.List;
  * Level 2: PetAdapter's built-in ArrayAdapter filter searches name + species.
  * Level 3: "Mon Profil" routes to ProfileActivity; lists fade in after data load.
  * Session: corrupted intents are rejected; logout clears session and returns to login.
+ * Material 3: a MaterialToolbar replaces the old custom section header.
  */
 public class UserDashboardActivity extends AppCompatActivity {
 
@@ -75,6 +77,10 @@ public class UserDashboardActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_user_dashboard);
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         userId = incomingUserId;
         sessionManager = new SessionManager(this);
