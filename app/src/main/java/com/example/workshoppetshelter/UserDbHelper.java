@@ -40,6 +40,7 @@ public class UserDbHelper extends SQLiteOpenHelper {
     private static final int SALT_LENGTH_BYTES = 16;   // 128-bit salt
     private static final int KEY_LENGTH_BITS = 256;    // 32-byte derived key
     private static final int PBKDF2_ITERATIONS = 120000;
+    private static final int MIN_PASSWORD_LENGTH = 8;   // same rule in UI and DB layer
 
     // SecureRandom is a CSPRNG. Never use java.util.Random for salts: it is predictable.
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
@@ -215,6 +216,62 @@ public class UserDbHelper extends SQLiteOpenHelper {
 
         long rowId = getWritableDatabase().insert(TABLE_USERS, null, values);
         return rowId != -1;
+    }
+
+    /**
+     * Forgot-password flow (educational workshop variant: no emailed reset token).
+     *
+     * Security properties:
+     *   - the email is checked FIRST: an unknown address costs one indexed query and no
+     *     PBKDF2 work, and the caller gets an honest false instead of a fake success;
+     *   - a BRAND NEW 128-bit salt is generated, so the old hash/salt pair is fully replaced;
+     *   - password_hash and salt are written in ONE parameterized UPDATE: no string
+     *     concatenation (SQL-injection safe) and no window where only one column changed.
+     *
+     * @return true only when a row was actually updated.
+     */
+    public boolean resetPassword(String email, String newPassword) {
+        String normalizedEmail = normalizeEmail(email);
+        if (normalizedEmail.isEmpty()
+                || newPassword == null
+                || newPassword.length() < MIN_PASSWORD_LENGTH) {
+            // Defense in depth: never let a weak secret reach the KDF, even if a caller
+            // bypasses the Activity validation.
+            return false;
+        }
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        // Step 1: existence check with a bound parameter. "1" limits the cursor to one row.
+        try (Cursor cursor = db.query(
+                TABLE_USERS,
+                new String[]{"id"},
+                "email = ?",
+                new String[]{normalizedEmail},
+                null,
+                null,
+                null,
+                "1")) {
+            if (!cursor.moveToFirst()) {
+                return false; // Email not found: no hashing, no update.
+            }
+        } // Cursor is closed before we write to the same table.
+
+        // Step 2 + 3: fresh salt, then derive the new hash from THAT salt.
+        String newSalt = createSalt();
+        String newHash;
+        try {
+            newHash = hashPassword(newPassword, newSalt);
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to hash password for password reset", e);
+        }
+
+        // Step 4: update BOTH columns atomically with a parameterized WHERE clause.
+        ContentValues values = new ContentValues();
+        values.put("password_hash", newHash);
+        values.put("salt", newSalt);
+        int rows = db.update(TABLE_USERS, values, "email = ?", new String[]{normalizedEmail});
+        return rows > 0;
     }
 
     /**

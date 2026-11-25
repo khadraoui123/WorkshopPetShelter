@@ -36,6 +36,12 @@
             android:name=".RegisterActivity"
             android:exported="false" />
 
+        <!-- Forgot password: internal explicit intent only, so exported="false". -->
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:label="Réinitialiser le mot de passe"
+            android:exported="false" />
+
         <!-- Phase 7 screens; Phase 8 adds readable labels for the recents screen. -->
         <activity
             android:name=".PetDetailsActivity"

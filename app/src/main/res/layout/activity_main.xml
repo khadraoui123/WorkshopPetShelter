@@ -74,6 +74,20 @@
             android:textAllCaps="false"
             app:backgroundTint="@color/accent" />
 
+        <!-- Forgot password: centered, tappable link below the login button. -->
+        <TextView
+            android:id="@+id/tvForgotPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="Mot de passe oublié ?"
+            android:textAlignment="center"
+            android:textColor="@color/accent"
+            android:textSize="14sp" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGoRegister"
             style="@style/Widget.Material3.Button.TextButton"
