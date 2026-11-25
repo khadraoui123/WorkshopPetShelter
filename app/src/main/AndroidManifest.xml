@@ -42,6 +42,12 @@
             android:label="Réinitialiser le mot de passe"
             android:exported="false" />
 
+        <!-- About: internal explicit intent only, so exported="false". -->
+        <activity
+            android:name=".AboutActivity"
+            android:label="À propos"
+            android:exported="false" />
+
         <!-- Phase 7 screens; Phase 8 adds readable labels for the recents screen. -->
         <activity
             android:name=".PetDetailsActivity"

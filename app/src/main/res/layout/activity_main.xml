@@ -88,6 +88,20 @@
             android:textColor="@color/accent"
             android:textSize="14sp" />
 
+        <!-- About: small secondary link, centered under the forgot-password link. -->
+        <TextView
+            android:id="@+id/tvAbout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="À propos de l'application"
+            android:textAlignment="center"
+            android:textColor="@color/text_primary"
+            android:textSize="12sp" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGoRegister"
             style="@style/Widget.Material3.Button.TextButton"

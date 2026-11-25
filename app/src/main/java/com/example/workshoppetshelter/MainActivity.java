@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btnLogin;
     private MaterialButton btnGoRegister;
     private TextView tvForgotPassword;
+    private TextView tvAbout;
 
     // Session management: separate from theme prefs.
     private SessionManager sessionManager;
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         btnGoRegister = findViewById(R.id.btnGoRegister);
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
+        tvAbout = findViewById(R.id.tvAbout);
 
         // Level 1 UX: eye icon reveals/hides the password. No validation logic touched.
         setupPasswordVisibilityToggle(etPassword);
@@ -91,6 +93,10 @@ public class MainActivity extends AppCompatActivity {
         // Forgot password: explicit internal navigation to the reset screen.
         tvForgotPassword.setOnClickListener(v ->
                 startActivity(new Intent(this, ResetPasswordActivity.class)));
+
+        // About: explicit internal navigation; the system intents live in AboutActivity.
+        tvAbout.setOnClickListener(v ->
+                startActivity(new Intent(this, AboutActivity.class)));
     }
 
     private boolean isSystemInDarkMode() {

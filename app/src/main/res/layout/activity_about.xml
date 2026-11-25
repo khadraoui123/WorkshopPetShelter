@@ -1,0 +1,99 @@
+<!-- E:\WorkshopPetShelter\app\src\main\res\layout\activity_about.xml -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Branding: the paw is plain Unicode text, so no extra image asset is needed. -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="🐾"
+            android:textColor="@color/accent"
+            android:textSize="64sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Refuge des Animaux"
+            android:textColor="@color/text_primary"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <!-- Version is replaced at runtime by AboutActivity with PackageInfo.versionName. -->
+        <TextView
+            android:id="@+id/tvVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Version 1.0"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="Développé par Wajih Khadraoui"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="Refuge des Animaux est une application dédiée à la gestion d'adoption des animaux. Elle permet aux utilisateurs de consulter les animaux disponibles, de faire des demandes d'adoption, et aux administrateurs de gérer le refuge."
+            android:textAlignment="center"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <!-- Implicit intents: ACTION_DIAL (no CALL_PHONE permission) and ACTION_VIEW. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnContact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Contacter le refuge"
+            android:textAllCaps="false"
+            app:backgroundTint="@color/accent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnWebsite"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Visiter notre site web"
+            android:textAllCaps="false"
+            android:textColor="@color/accent"
+            app:strokeColor="@color/accent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBack"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Retour"
+            android:textAllCaps="false"
+            android:textColor="@color/accent" />
+
+    </LinearLayout>
+
+</ScrollView>
