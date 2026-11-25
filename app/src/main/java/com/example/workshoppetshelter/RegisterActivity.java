@@ -38,6 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LocaleHelper.applySavedLocale(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
@@ -130,17 +131,17 @@ public class RegisterActivity extends AppCompatActivity {
         String password = etPassword.getText().toString();
 
         if (name.isEmpty()) {
-            showToast("Veuillez saisir votre nom.", false);
+            showToast(getString(R.string.error_name_required), false);
             return;
         }
 
         if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            showToast("Vérifiez l'adresse e-mail.", false);
+            showToast(getString(R.string.error_email_invalid), false);
             return;
         }
 
         if (password.length() < 8) {
-            showToast("Le mot de passe doit contenir au moins 8 caractères.", false);
+            showToast(getString(R.string.error_password_too_short), false);
             return;
         }
 
@@ -150,11 +151,11 @@ public class RegisterActivity extends AppCompatActivity {
         boolean success = db.register(name, email, password);
         if (!success) {
             // The only remaining reason for failure is the UNIQUE email constraint.
-            showToast("Cet e-mail est déjà utilisé.", false);
+            showToast(getString(R.string.error_email_already_used), false);
             return;
         }
 
-        showToast("Compte créé avec succès !", true);
+        showToast(getString(R.string.success_account_created), true);
         // Return to the previous screen (login). Never auto-login after registration.
         finish();
     }

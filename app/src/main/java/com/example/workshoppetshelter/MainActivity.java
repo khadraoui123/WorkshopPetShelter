@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -37,12 +38,15 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btnGoRegister;
     private TextView tvForgotPassword;
     private TextView tvAbout;
+    private MaterialButton btnLanguage;
 
     // Session management: separate from theme prefs.
     private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LocaleHelper.applySavedLocale(this);
+
         // PHASE 1 LOGIC: MUST stay BEFORE super.onCreate(). Do not move this block.
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         boolean isDark;
@@ -61,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
 
         themeToggleButton = findViewById(R.id.buttonToggleTheme);
         updateToggleButtonText(isDark);
+
+        btnLanguage = findViewById(R.id.btnLanguage);
+        btnLanguage.setOnClickListener(v -> showLanguageDialog());
 
         themeToggleButton.setOnClickListener(v -> {
             boolean newDark = !isDarkModeActive();
@@ -99,6 +106,23 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(this, AboutActivity.class)));
     }
 
+    /** In-app language switcher: French (default), Arabic (RTL), English. */
+    private void showLanguageDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.language_dialog_title)
+                .setMessage(R.string.language_dialog_message)
+                .setItems(new CharSequence[]{
+                        getString(R.string.language_fr),
+                        getString(R.string.language_ar),
+                        getString(R.string.language_en)
+                }, (dialog, which) -> {
+                    String language = which == 0 ? "fr" : which == 1 ? "ar" : "en";
+                    LocaleHelper.setLocale(this, language);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
     private boolean isSystemInDarkMode() {
         int uiMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         return uiMode == Configuration.UI_MODE_NIGHT_YES;
@@ -116,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateToggleButtonText(boolean isDark) {
-        themeToggleButton.setText(isDark ? "Mode Sombre" : "Mode Clair");
+        themeToggleButton.setText(isDark ? R.string.theme_dark : R.string.theme_light);
     }
 
     /**
@@ -196,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
         if (email.isEmpty()
                 || !Patterns.EMAIL_ADDRESS.matcher(email).matches()
                 || password.isEmpty()) {
-            showToast("Vérifiez l'e-mail et le mot de passe.", false);
+            showToast(getString(R.string.error_check_email_password), false);
             return;
         }
 
@@ -206,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
         UserProfile user = db.login(email, password);
         if (user == null) {
             // Generic message: do not reveal whether the email exists.
-            showToast("Identifiants incorrects.", false);
+            showToast(getString(R.string.error_invalid_credentials), false);
             return;
         }
 

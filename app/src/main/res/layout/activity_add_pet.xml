@@ -18,7 +18,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Retour"
+            android:contentDescription="@string/back"
             android:src="@android:drawable/ic_menu_revert"
             app:tint="@color/accent" />
 
@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Ajouter un animal"
+            android:text="@string/add_pet"
             android:textColor="@color/text_primary"
             android:textSize="24sp"
             android:textStyle="bold" />
@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:hint="Nom"
+            android:hint="@string/hint_pet_name"
             android:inputType="textPersonName"
             android:maxLines="1"
             android:textColor="@color/text_primary"
@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Espèce (Chien, Chat, Lapin...)"
+            android:hint="@string/hint_pet_species"
             android:inputType="text"
             android:maxLines="1"
             android:textColor="@color/text_primary"
@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Âge (années)"
+            android:hint="@string/hint_pet_age"
             android:inputType="number"
             android:maxLines="1"
             android:textColor="@color/text_primary"
@@ -70,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Enregistrer"
+            android:text="@string/action_save"
             android:textAllCaps="false"
             app:backgroundTint="@color/accent" />
 

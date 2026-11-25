@@ -18,7 +18,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Retour"
+            android:contentDescription="@string/back"
             android:src="@android:drawable/ic_menu_revert"
             app:tint="@color/accent" />
 
@@ -28,8 +28,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:contentDescription="Animal"
-            android:text="🐾"
+            android:contentDescription="@string/animal"
+            android:text="@string/pet_emoji"
             android:textSize="32sp" />
 
         <TextView
@@ -73,7 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Partager"
+            android:text="@string/share"
             android:textAllCaps="false"
             app:backgroundTint="@color/accent" />
 
@@ -82,7 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Demander l'adoption"
+            android:text="@string/request_adoption"
             android:textAllCaps="false"
             android:visibility="gone"
             app:backgroundTint="@color/accent" />
@@ -92,7 +92,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Approuver"
+            android:text="@string/approve"
             android:textAllCaps="false"
             android:visibility="gone"
             app:backgroundTint="@color/accent" />
@@ -103,7 +103,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Refuser"
+            android:text="@string/reject"
             android:textAllCaps="false"
             android:textColor="@color/accent"
             android:visibility="gone" />
@@ -115,7 +115,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Supprimer l'animal"
+            android:text="@string/delete_pet"
             android:textAllCaps="false"
             android:textColor="@color/accent"
             android:visibility="gone" />

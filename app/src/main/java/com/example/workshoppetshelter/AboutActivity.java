@@ -25,7 +25,6 @@ import com.google.android.material.button.MaterialButton;
  */
 public class AboutActivity extends AppCompatActivity {
 
-    private static final String FALLBACK_VERSION = "Version 1.0";
     private static final String PHONE_URI = "tel:+21612345678";
     private static final String WEBSITE_URI = "https://www.google.com";
 
@@ -33,6 +32,7 @@ public class AboutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LocaleHelper.applySavedLocale(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
@@ -59,11 +59,11 @@ public class AboutActivity extends AppCompatActivity {
                     .getPackageInfo(getPackageName(), 0).versionName;
             // Defensive: versionName can be null/empty if a build variant omits it.
             tvVersion.setText(version == null || version.isEmpty()
-                    ? FALLBACK_VERSION
-                    : "Version " + version);
+                    ? getString(R.string.version_fallback)
+                    : getString(R.string.version_format, version));
         } catch (PackageManager.NameNotFoundException e) {
             // Should be impossible for our own package, but never crash the About screen.
-            tvVersion.setText(FALLBACK_VERSION);
+            tvVersion.setText(getString(R.string.version_fallback));
         }
     }
 
@@ -76,7 +76,7 @@ public class AboutActivity extends AppCompatActivity {
         try {
             startActivity(dial);
         } catch (ActivityNotFoundException e) {
-            showToast("Aucune application de téléphone disponible.", false);
+            showToast(getString(R.string.error_no_dialer), false);
         }
     }
 
@@ -86,7 +86,7 @@ public class AboutActivity extends AppCompatActivity {
         try {
             startActivity(web);
         } catch (ActivityNotFoundException e) {
-            showToast("Aucun navigateur disponible.", false);
+            showToast(getString(R.string.error_no_browser), false);
         }
     }
 

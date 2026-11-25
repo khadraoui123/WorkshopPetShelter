@@ -18,7 +18,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Retour"
+            android:contentDescription="@string/back"
             android:src="@android:drawable/ic_menu_revert"
             app:tint="@color/accent" />
 
@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Mon Profil"
+            android:text="@string/profile"
             android:textColor="@color/text_primary"
             android:textSize="24sp"
             android:textStyle="bold" />
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Informations personnelles"
+            android:text="@string/profile_info_title"
             android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Nom : —"
+            android:text="@string/profile_name_placeholder"
             android:textColor="@color/text_primary"
             android:textSize="16sp" />
 
@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Email : —"
+            android:text="@string/profile_email_placeholder"
             android:textColor="@color/text_primary"
             android:textSize="16sp" />
 
@@ -63,7 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Rôle : —"
+            android:text="@string/profile_role_placeholder"
             android:textColor="@color/text_primary"
             android:textSize="16sp" />
 
@@ -72,7 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Animaux adoptés : 0"
+            android:text="@string/profile_adopted_placeholder"
             android:textColor="@color/accent"
             android:textSize="18sp"
             android:textStyle="bold" />

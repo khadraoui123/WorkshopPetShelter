@@ -27,6 +27,7 @@ public class AddPetActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LocaleHelper.applySavedLocale(this);
         super.onCreate(savedInstanceState);
 
         /*
@@ -35,7 +36,7 @@ public class AddPetActivity extends AppCompatActivity {
          */
         String userRole = getIntent().getStringExtra("user_role");
         if (!"ADMIN".equals(userRole)) {
-            showToast("Accès refusé. Réservé aux administrateurs.", false);
+            showToast(getString(R.string.error_access_denied), false);
             finish();
             return;
         }
@@ -92,7 +93,7 @@ public class AddPetActivity extends AppCompatActivity {
         String ageText = etAge.getText().toString().trim();
 
         if (name.isEmpty() || species.isEmpty() || ageText.isEmpty()) {
-            showToast("Veuillez remplir tous les champs.", false);
+            showToast(getString(R.string.error_all_fields_required), false);
             return;
         }
 
@@ -100,12 +101,12 @@ public class AddPetActivity extends AppCompatActivity {
         try {
             age = Integer.parseInt(ageText);
         } catch (NumberFormatException e) {
-            showToast("Âge invalide.", false);
+            showToast(getString(R.string.error_invalid_age), false);
             return;
         }
 
         if (age < 0) {
-            showToast("Âge invalide.", false);
+            showToast(getString(R.string.error_invalid_age), false);
             return;
         }
 
@@ -115,15 +116,15 @@ public class AddPetActivity extends AppCompatActivity {
         try {
             long id = db.addPet(name, species, age);
             if (id == -1L) {
-                showToast("Erreur lors de l'ajout.", false);
+                showToast(getString(R.string.error_add_pet), false);
                 return;
             }
         } catch (Exception e) {
-            showToast("Erreur lors de l'ajout.", false);
+            showToast(getString(R.string.error_add_pet), false);
             return;
         }
 
-        showToast("Animal ajouté !", true);
+        showToast(getString(R.string.success_pet_added), true);
         finish();
     }
 }

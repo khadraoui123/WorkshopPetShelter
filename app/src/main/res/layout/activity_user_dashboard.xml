@@ -16,7 +16,7 @@
             android:id="@+id/tvGreeting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Bonjour 🐾"
+            android:text="@string/greeting_user_empty"
             android:textColor="@color/text_primary"
             android:textSize="22sp"
             android:textStyle="bold" />
@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Déconnexion"
+            android:text="@string/logout"
             android:textColor="@color/accent" />
 
         <!-- Level 3: user-only route to the profile screen. -->
@@ -37,14 +37,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Mon Profil"
+            android:text="@string/profile"
             android:textColor="@color/accent" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Animaux disponibles"
+            android:text="@string/available_pets"
             android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -57,7 +57,7 @@
             android:layout_marginTop="8dp"
             android:drawableStart="@android:drawable/ic_menu_search"
             android:drawablePadding="8dp"
-            android:hint="Rechercher un animal..."
+            android:hint="@string/search_hint"
             android:inputType="text"
             android:paddingStart="12dp"
             android:singleLine="true"
@@ -79,7 +79,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
-            android:text="Aucun animal disponible."
+            android:text="@string/empty_available_pets"
             android:textColor="@color/text_primary"
             android:textStyle="italic"
             android:visibility="gone" />
@@ -88,7 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Mes demandes"
+            android:text="@string/my_requests"
             android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -106,7 +106,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
-            android:text="Aucune demande."
+            android:text="@string/empty_requests"
             android:textColor="@color/text_primary"
             android:textStyle="italic"
             android:visibility="gone" />

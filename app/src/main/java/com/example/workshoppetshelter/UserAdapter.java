@@ -45,7 +45,11 @@ public class UserAdapter extends ArrayAdapter<UserProfile> {
         holder.email.setText(user.getEmail());
 
         Role role = user.getRole();
-        holder.role.setText(role == null ? "" : role.name());
+        holder.role.setText(role == null
+                ? getContext().getString(R.string.status_unknown)
+                : getContext().getString(role == Role.ADMIN
+                        ? R.string.role_admin
+                        : R.string.role_user));
         holder.role.setTextColor(Color.parseColor(
                 role == Role.ADMIN ? "#D32F2F" : "#1976D2"));
 

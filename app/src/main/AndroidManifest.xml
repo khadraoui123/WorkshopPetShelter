@@ -39,30 +39,30 @@
         <!-- Forgot password: internal explicit intent only, so exported="false". -->
         <activity
             android:name=".ResetPasswordActivity"
-            android:label="Réinitialiser le mot de passe"
+            android:label="@string/title_reset_password"
             android:exported="false" />
 
         <!-- About: internal explicit intent only, so exported="false". -->
         <activity
             android:name=".AboutActivity"
-            android:label="À propos"
+            android:label="@string/title_about"
             android:exported="false" />
 
         <!-- Phase 7 screens; Phase 8 adds readable labels for the recents screen. -->
         <activity
             android:name=".PetDetailsActivity"
-            android:label="Détails de l'animal"
+            android:label="@string/title_pet_details"
             android:exported="false" />
 
         <activity
             android:name=".AddPetActivity"
-            android:label="Ajouter un animal"
+            android:label="@string/add_pet"
             android:exported="false" />
 
         <!-- Level 3: user-only profile. Internal explicit intent, so exported="false". -->
         <activity
             android:name=".ProfileActivity"
-            android:label="Mon Profil"
+            android:label="@string/profile"
             android:exported="false" />
 
     </application>

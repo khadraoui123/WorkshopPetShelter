@@ -16,7 +16,7 @@
             android:id="@+id/tvGreeting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Bonjour — Gestionnaire"
+            android:text="@string/greeting_admin_empty"
             android:textColor="@color/text_primary"
             android:textSize="22sp"
             android:textStyle="bold" />
@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Déconnexion"
+            android:text="@string/logout"
             android:textColor="@color/accent" />
 
         <com.google.android.material.button.MaterialButton
@@ -35,14 +35,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Ajouter un animal"
+            android:text="@string/add_pet"
             android:textColor="?attr/colorOnPrimary" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Tous les animaux"
+            android:text="@string/all_pets"
             android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -55,7 +55,7 @@
             android:layout_marginTop="8dp"
             android:drawableStart="@android:drawable/ic_menu_search"
             android:drawablePadding="8dp"
-            android:hint="Rechercher un animal..."
+            android:hint="@string/search_hint"
             android:inputType="text"
             android:paddingStart="12dp"
             android:singleLine="true"
@@ -77,7 +77,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
-            android:text="Aucun animal."
+            android:text="@string/empty_pets"
             android:textColor="@color/text_primary"
             android:textStyle="italic"
             android:visibility="gone" />
@@ -86,7 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Utilisateurs"
+            android:text="@string/users"
             android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -104,7 +104,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
-            android:text="Aucun utilisateur."
+            android:text="@string/empty_users"
             android:textColor="@color/text_primary"
             android:textStyle="italic"
             android:visibility="gone" />
@@ -114,7 +114,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Historique des adoptions"
+            android:text="@string/adoption_history"
             android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -132,7 +132,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
-            android:text="Aucune adoption pour le moment."
+            android:text="@string/empty_adopted"
             android:textColor="@color/text_primary"
             android:textStyle="italic"
             android:visibility="gone" />

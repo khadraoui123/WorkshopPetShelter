@@ -27,6 +27,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LocaleHelper.applySavedLocale(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
@@ -44,12 +45,17 @@ public class ProfileActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-        tvProfileName.setText("Nom : " + (userName == null || userName.isEmpty()
-                ? "—" : userName));
-        tvProfileEmail.setText("Email : " + (userEmail == null || userEmail.isEmpty()
-                ? "—" : userEmail));
+        tvProfileName.setText(getString(R.string.profile_name_format,
+                userName == null || userName.isEmpty()
+                        ? getString(R.string.empty_value)
+                        : userName));
+        tvProfileEmail.setText(getString(R.string.profile_email_format,
+                userEmail == null || userEmail.isEmpty()
+                        ? getString(R.string.empty_value)
+                        : userEmail));
         // This Activity is USER-only; no extra intent field is needed for the role.
-        tvProfileRole.setText("Rôle : " + Role.USER.name());
+        tvProfileRole.setText(getString(R.string.profile_role_format,
+                getString(R.string.role_user)));
     }
 
     @Override
@@ -58,6 +64,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         // COUNT(*) runs in SQLite; we never fetch every pet just to count them in Java.
         int adoptedCount = db.countAdoptedPetsByUser(userId);
-        tvAdoptedCount.setText("Animaux adoptés : " + adoptedCount);
+        tvAdoptedCount.setText(getString(R.string.profile_adopted_format, adoptedCount));
     }
 }

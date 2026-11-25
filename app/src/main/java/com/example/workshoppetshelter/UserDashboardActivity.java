@@ -60,6 +60,7 @@ public class UserDashboardActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LocaleHelper.applySavedLocale(this);
         super.onCreate(savedInstanceState);
 
         /*
@@ -101,7 +102,9 @@ public class UserDashboardActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.btnLogout);
         btnProfile = findViewById(R.id.btnProfile);
 
-        tvGreeting.setText("Bonjour " + (userName == null ? "" : userName) + " 🐾");
+        tvGreeting.setText(userName == null || userName.isEmpty()
+                ? getString(R.string.greeting_user_empty)
+                : getString(R.string.greeting_user, userName));
 
         lvAvailablePets.setOnItemClickListener((parent, view, position, id) ->
                 openPetDetails((Pet) parent.getItemAtPosition(position)));
@@ -117,16 +120,16 @@ public class UserDashboardActivity extends AppCompatActivity {
     /** Session: confirmed logout clears the session and returns to the login screen. */
     private void confirmLogout() {
         new AlertDialog.Builder(this)
-                .setTitle("Déconnexion")
-                .setMessage("Voulez-vous vraiment vous déconnecter ?")
-                .setPositiveButton("Oui", (dialog, which) -> {
+                .setTitle(R.string.logout)
+                .setMessage(R.string.logout_message)
+                .setPositiveButton(R.string.yes, (dialog, which) -> {
                     sessionManager.logout();
                     // Explicit navigation is mandatory: finish() alone would let Splash
                     // read a stale/cleared session and skip the login screen.
                     startActivity(new Intent(this, MainActivity.class));
                     finish();
                 })
-                .setNegativeButton("Annuler", null)
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 

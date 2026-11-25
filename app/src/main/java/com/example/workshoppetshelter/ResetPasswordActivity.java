@@ -41,6 +41,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LocaleHelper.applySavedLocale(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_password);
 
@@ -135,17 +136,17 @@ public class ResetPasswordActivity extends AppCompatActivity {
         String confirmPassword = etConfirmPassword.getText().toString();
 
         if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            showToast("Vérifiez l'adresse e-mail.", false);
+            showToast(getString(R.string.error_email_invalid), false);
             return;
         }
 
         if (newPassword.length() < MIN_PASSWORD_LENGTH) {
-            showToast("Le mot de passe doit contenir au moins 8 caractères.", false);
+            showToast(getString(R.string.error_password_too_short), false);
             return;
         }
 
         if (!newPassword.equals(confirmPassword)) {
-            showToast("Les mots de passe ne correspondent pas.", false);
+            showToast(getString(R.string.error_passwords_mismatch), false);
             return;
         }
 
@@ -156,11 +157,11 @@ public class ResetPasswordActivity extends AppCompatActivity {
         if (!success) {
             // Workshop UX: explicit failure is more informative for the demo.
             // A production app would show the SAME message for every outcome.
-            showToast("Cet e-mail n'existe pas.", false);
+            showToast(getString(R.string.error_email_not_found), false);
             return;
         }
 
-        showToast("Mot de passe réinitialisé avec succès !", true);
+        showToast(getString(R.string.success_password_reset), true);
         finish(); // Return to MainActivity; the user signs in with the new password.
     }
 }

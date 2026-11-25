@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Locale;
 
 /** Custom ArrayAdapter: binds one Pet to one row_pet.xml view. */
 public class PetAdapter extends ArrayAdapter<Pet> {
@@ -42,84 +41,17 @@ public class PetAdapter extends ArrayAdapter<Pet> {
             return convertView;
         }
 
-        holder.emoji.setText(emojiForSpecies(pet.getSpecies()));
-        // Phase 8: accessibility label must match the actual species, even on recycled rows.
-        holder.emoji.setContentDescription(labelForSpecies(pet.getSpecies()));
-        holder.info.setText(infoForPet(pet));
-        holder.status.setText(labelForStatus(pet.getStatus()));
-        holder.status.setTextColor(Color.parseColor(colorForStatus(pet.getStatus())));
+        Context context = getContext();
+        // Emoji glyphs, accessibility labels, info line and status all come from resources.
+        holder.emoji.setText(PetLabels.emojiForSpecies(context, pet.getSpecies()));
+        holder.emoji.setContentDescription(
+                PetLabels.labelForSpecies(context, pet.getSpecies()));
+        holder.info.setText(PetLabels.infoForPet(context, pet));
+        holder.status.setText(PetLabels.labelForStatus(context, pet.getStatus()));
+        holder.status.setTextColor(
+                Color.parseColor(PetLabels.colorForStatus(pet.getStatus())));
 
         return convertView;
-    }
-
-    private String emojiForSpecies(String species) {
-        if (species == null) {
-            return "🐾";
-        }
-        switch (species.toLowerCase(Locale.ROOT)) {
-            case "chien":
-                return "🐕";
-            case "chat":
-                return "🐈";
-            case "lapin":
-                return "🐇";
-            default:
-                return "🐾";
-        }
-    }
-
-    /** Accessibility label for the species emoji. */
-    private String labelForSpecies(String species) {
-        if (species == null) {
-            return "Animal";
-        }
-        switch (species.toLowerCase(Locale.ROOT)) {
-            case "chien":
-                return "Chien";
-            case "chat":
-                return "Chat";
-            case "lapin":
-                return "Lapin";
-            default:
-                return "Animal";
-        }
-    }
-
-    private String infoForPet(Pet pet) {
-        String info = pet.getName()
-                + " • " + pet.getSpecies()
-                + " • " + pet.getAge() + " ans";
-        String requestedBy = pet.getRequestedBy();
-        if (requestedBy != null && !requestedBy.isEmpty()) {
-            info += "\nDemandé par " + requestedBy;
-        }
-        return info;
-    }
-
-    private String labelForStatus(String status) {
-        if (status == null) {
-            return "";
-        }
-        switch (status) {
-            case "AVAILABLE":
-                return "Disponible";
-            case "PENDING":
-                return "En attente";
-            case "ADOPTED":
-                return "Adopté";
-            default:
-                return status;
-        }
-    }
-
-    private String colorForStatus(String status) {
-        if ("PENDING".equals(status)) {
-            return "#FF9800";
-        }
-        if ("ADOPTED".equals(status)) {
-            return "#9E9E9E";
-        }
-        return "#4CAF50"; // AVAILABLE and any unknown value default to green.
     }
 
     static class ViewHolder {

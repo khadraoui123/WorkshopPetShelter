@@ -15,8 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 
-import java.util.Locale;
-
 /**
  * Phase 7: pet detail + state-dependent actions.
  *
@@ -30,6 +28,7 @@ import java.util.Locale;
  *            Admin-only delete, strict button projection, deny-by-default role check.
  * Level 1 UX: coloured Toasts only; no state or navigation logic changed.
  * Level 2: explicit ImageButton back and native ACTION_SEND sharing.
+ * i18n: every user-visible value is read from resources through PetLabels / getString.
  */
 public class PetDetailsActivity extends AppCompatActivity {
 
@@ -56,6 +55,7 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LocaleHelper.applySavedLocale(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pet_details);
 
@@ -84,7 +84,7 @@ public class PetDetailsActivity extends AppCompatActivity {
 
         pet = db.getPetById(petId);
         if (pet == null) {
-            showToast("Animal introuvable.", false);
+            showToast(getString(R.string.error_pet_not_found), false);
             finish();
             return;
         }
@@ -96,16 +96,20 @@ public class PetDetailsActivity extends AppCompatActivity {
 
     private void renderPet(Pet pet) {
         String species = pet.getSpecies();
-        tvEmoji.setText(emojiForSpecies(species));
-        // TalkBack should announce "Chien", not "dog face emoji".
-        tvEmoji.setContentDescription(labelForSpecies(species));
+        tvEmoji.setText(PetLabels.emojiForSpecies(this, species));
+        // TalkBack announces a localized species label, not an emoji name.
+        tvEmoji.setContentDescription(PetLabels.labelForSpecies(this, species));
 
         tvTitle.setText(pet.getName());
-        tvInfo.setText((species == null ? "" : species) + " • " + pet.getAge() + " ans");
+        String speciesLabel = species == null || species.trim().isEmpty()
+                ? getString(R.string.empty_value)
+                : PetLabels.labelForSpecies(this, species);
+        tvInfo.setText(getString(R.string.pet_info_short_format,
+                speciesLabel, pet.getAge(), getString(R.string.years)));
 
         String status = pet.getStatus();
-        tvStatus.setText(labelForStatus(status));
-        tvStatus.setTextColor(Color.parseColor(colorForStatus(status)));
+        tvStatus.setText(PetLabels.labelForStatus(this, status));
+        tvStatus.setTextColor(Color.parseColor(PetLabels.colorForStatus(status)));
     }
 
     /**
@@ -134,8 +138,10 @@ public class PetDetailsActivity extends AppCompatActivity {
 
         if ("PENDING".equals(status)) {
             String requester = pet.getRequestedBy();
-            tvRequestedBy.setText("Demandé par : "
-                    + (requester == null || requester.isEmpty() ? "—" : requester));
+            tvRequestedBy.setText(getString(R.string.requested_by_colon,
+                    requester == null || requester.isEmpty()
+                            ? getString(R.string.empty_value)
+                            : requester));
             tvRequestedBy.setVisibility(View.VISIBLE);
         }
     }
@@ -145,33 +151,39 @@ public class PetDetailsActivity extends AppCompatActivity {
             // Single-shot guard: a second tap cannot reach the DB write.
             btnRequestAdoption.setEnabled(false);
             boolean ok = db.requestAdoption(petId, userId);
-            showToast(ok ? "Demande envoyée !" : "Cet animal n'est plus disponible.", ok);
+            showToast(getString(ok
+                    ? R.string.success_request_sent
+                    : R.string.error_pet_unavailable), ok);
             finish();
         });
 
         btnApprove.setOnClickListener(v -> {
             btnApprove.setEnabled(false);
             boolean ok = db.approveAdoption(petId);
-            showToast(ok ? "Adoption approuvée !" : "Cet animal n'est plus disponible.", ok);
+            showToast(getString(ok
+                    ? R.string.success_adoption_approved
+                    : R.string.error_pet_unavailable), ok);
             finish();
         });
 
         /*
          * Reject is irreversible, so we ask first. The button is disabled inside the
          * CONFIRMED action's listener (its first line), not when the dialog opens, so
-         * "Annuler" truly does nothing and leaves the screen usable. finish() follows.
+         * "Cancel" truly does nothing and leaves the screen usable. finish() follows.
          */
         btnReject.setOnClickListener(v ->
                 new AlertDialog.Builder(this)
-                        .setTitle("Confirmer")
-                        .setMessage("Voulez-vous vraiment refuser cette demande ?")
-                        .setPositiveButton("Oui", (dialog, which) -> {
+                        .setTitle(R.string.confirm)
+                        .setMessage(R.string.confirm_reject)
+                        .setPositiveButton(R.string.yes, (dialog, which) -> {
                             btnReject.setEnabled(false);
                             boolean ok = db.rejectAdoption(petId);
-                            showToast(ok ? "Demande refusée." : "Cet animal n'est plus disponible.", ok);
+                            showToast(getString(ok
+                                    ? R.string.success_request_rejected
+                                    : R.string.error_pet_unavailable), ok);
                             finish();
                         })
-                        .setNegativeButton("Annuler", null)
+                        .setNegativeButton(R.string.cancel, null)
                         .show());
 
         /*
@@ -180,38 +192,44 @@ public class PetDetailsActivity extends AppCompatActivity {
          */
         btnDelete.setOnClickListener(v ->
                 new AlertDialog.Builder(this)
-                        .setTitle("Confirmer")
-                        .setMessage("Voulez-vous vraiment supprimer cet animal ?")
-                        .setPositiveButton("Oui", (dialog, which) -> {
+                        .setTitle(R.string.confirm)
+                        .setMessage(R.string.confirm_delete_pet)
+                        .setPositiveButton(R.string.yes, (dialog, which) -> {
                             btnDelete.setEnabled(false);
                             boolean ok = db.deletePet(petId);
-                            showToast(ok ? "Animal supprimé." : "Animal introuvable.", ok);
+                            showToast(getString(ok
+                                    ? R.string.success_pet_deleted
+                                    : R.string.error_pet_not_found), ok);
                             finish();
                         })
-                        .setNegativeButton("Annuler", null)
+                        .setNegativeButton(R.string.cancel, null)
                         .show());
     }
 
     /** Level 2: native Android share sheet; visible to Admin and User alike. */
     private void sharePet() {
         if (pet == null) {
-            showToast("Animal introuvable.", false);
+            showToast(getString(R.string.error_pet_not_found), false);
             return;
         }
 
-        String name = pet.getName() == null ? "Animal" : pet.getName();
-        String species = pet.getSpecies() == null ? "—" : pet.getSpecies();
-        String shareText = "Découvrez " + name + " (" + species + ", "
-                + pet.getAge() + " ans) au Refuge des Animaux ! 🐾";
+        String name = pet.getName() == null
+                ? getString(R.string.animal)
+                : pet.getName();
+        String species = pet.getSpecies() == null || pet.getSpecies().trim().isEmpty()
+                ? getString(R.string.empty_value)
+                : PetLabels.labelForSpecies(this, pet.getSpecies());
+        String shareText = getString(R.string.share_text_format,
+                name, species, pet.getAge(), getString(R.string.years));
 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
 
         try {
-            startActivity(Intent.createChooser(shareIntent, "Partager via"));
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.share_via)));
         } catch (ActivityNotFoundException e) {
-            showToast("Aucune application de partage disponible.", false);
+            showToast(getString(R.string.error_no_share_app), false);
         }
     }
 
@@ -230,58 +248,5 @@ public class PetDetailsActivity extends AppCompatActivity {
             }
         }
         toast.show();
-    }
-
-    private String labelForStatus(String status) {
-        if ("PENDING".equals(status)) {
-            return "En attente";
-        }
-        if ("ADOPTED".equals(status)) {
-            return "Adopté";
-        }
-        return "Disponible";
-    }
-
-    private String colorForStatus(String status) {
-        if ("PENDING".equals(status)) {
-            return "#FF9800";
-        }
-        if ("ADOPTED".equals(status)) {
-            return "#9E9E9E";
-        }
-        return "#4CAF50";
-    }
-
-    private String emojiForSpecies(String species) {
-        if (species == null) {
-            return "🐾";
-        }
-        switch (species.toLowerCase(Locale.ROOT)) {
-            case "chien":
-                return "🐕";
-            case "chat":
-                return "🐈";
-            case "lapin":
-                return "🐇";
-            default:
-                return "🐾";
-        }
-    }
-
-    /** Accessibility label for the species emoji, independent of the glyph shown. */
-    private String labelForSpecies(String species) {
-        if (species == null) {
-            return "Animal";
-        }
-        switch (species.toLowerCase(Locale.ROOT)) {
-            case "chien":
-                return "Chien";
-            case "chat":
-                return "Chat";
-            case "lapin":
-                return "Lapin";
-            default:
-                return "Animal";
-        }
     }
 }
