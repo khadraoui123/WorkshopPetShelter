@@ -4,6 +4,8 @@ package com.example.workshoppetshelter;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -30,8 +33,11 @@ import java.util.List;
  * Level 3: "Mon Profil" routes to ProfileActivity; lists fade in after data load.
  * Session: corrupted intents are rejected; logout clears session and returns to login.
  * Material 3: a MaterialToolbar replaces the old custom section header.
+ * Phase B: first-load ProgressBar, MaterialCardView rows, and preserved search state.
  */
 public class UserDashboardActivity extends AppCompatActivity {
+
+    private static final long LOAD_DELAY_MS = 800L;
 
     private UserDbHelper db;
     private SessionManager sessionManager;
@@ -42,10 +48,13 @@ public class UserDashboardActivity extends AppCompatActivity {
     private TextView tvEmptyAvailable;
     private TextView tvEmptyRequests;
     private EditText etSearchAvailable;
+    private ProgressBar progressBar;
     private MaterialButton btnLogout;
     private MaterialButton btnProfile;
 
     private PetAdapter petAdapter;
+    private boolean isFirstLoad = true;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     // Keeps the Level 1 empty state correct while the built-in filter runs asynchronously.
     private final DataSetObserver petDataSetObserver = new DataSetObserver() {
@@ -78,6 +87,11 @@ public class UserDashboardActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_user_dashboard);
 
+        // A rotation restores the UI state; do not replay the simulated first-load delay.
+        if (savedInstanceState != null) {
+            isFirstLoad = false;
+        }
+
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
@@ -105,6 +119,7 @@ public class UserDashboardActivity extends AppCompatActivity {
         tvEmptyAvailable = findViewById(R.id.tvEmptyAvailable);
         tvEmptyRequests = findViewById(R.id.tvEmptyRequests);
         etSearchAvailable = findViewById(R.id.etSearchAvailable);
+        progressBar = findViewById(R.id.progressBar);
         btnLogout = findViewById(R.id.btnLogout);
         btnProfile = findViewById(R.id.btnProfile);
 
@@ -196,6 +211,41 @@ public class UserDashboardActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        // Capture the query BEFORE any data work so filtering survives every resume.
+        final String query = currentSearchQuery();
+
+        if (isFirstLoad) {
+            progressBar.setVisibility(View.VISIBLE);
+            setListsVisibility(View.GONE);
+
+            // Main-looper postDelayed keeps the UI thread non-blocking (no Thread.sleep).
+            mainHandler.postDelayed(() -> {
+                if (isFinishing() || isDestroyed()) {
+                    return;
+                }
+                loadDashboardData(query);
+                progressBar.setVisibility(View.GONE);
+                setListsVisibility(View.VISIBLE);
+                isFirstLoad = false;
+                fadeInLists();
+            }, LOAD_DELAY_MS);
+            return;
+        }
+
+        // Returning from PetDetails: fresh data, no spinner flash, same search filter.
+        loadDashboardData(query);
+        fadeInLists();
+    }
+
+    /** Reads the search field defensively; EditText text can be null during restoration. */
+    private String currentSearchQuery() {
+        return etSearchAvailable.getText() == null
+                ? ""
+                : etSearchAvailable.getText().toString();
+    }
+
+    /** Single source of truth for loading adapters and re-applying the saved filter. */
+    private void loadDashboardData(String query) {
         // Reload on every resume: returning from PetDetails must show fresh DB data.
         List<Pet> available = db.getAvailablePets();
         if (available == null) {
@@ -221,17 +271,20 @@ public class UserDashboardActivity extends AppCompatActivity {
         lvMyRequests.setAdapter(new PetAdapter(this, requests));
 
         // Re-apply a query that survived a rotation or a return from another screen.
-        String query = etSearchAvailable.getText() == null
-                ? ""
-                : etSearchAvailable.getText().toString();
         if (!query.isEmpty()) {
             petAdapter.getFilter().filter(query);
         }
 
         updatePetEmptyState();
         tvEmptyRequests.setVisibility(requests.isEmpty() ? View.VISIBLE : View.GONE);
+    }
 
-        // Level 3: data is loaded and views are measured; now start the system fade-in.
+    private void setListsVisibility(int visibility) {
+        lvAvailablePets.setVisibility(visibility);
+        lvMyRequests.setVisibility(visibility);
+    }
+
+    private void fadeInLists() {
         startFadeIn(lvAvailablePets);
         startFadeIn(lvMyRequests);
     }
@@ -248,5 +301,12 @@ public class UserDashboardActivity extends AppCompatActivity {
         }
         tvEmptyAvailable.setVisibility(
                 petAdapter.getCount() == 0 ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        // No delayed callback may touch a destroyed Activity.
+        mainHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
     }
 }

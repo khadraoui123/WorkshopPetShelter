@@ -14,111 +14,129 @@
         app:navigationIcon="@drawable/ic_arrow_back"
         app:title="@string/available_pets" />
 
-    <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
+        android:layout_weight="1">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:id="@+id/tvGreeting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/greeting_user_empty"
+                    android:textColor="@color/text_primary"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogout"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/logout"
+                    android:textColor="@color/accent" />
+
+                <!-- Level 3: user-only route to the profile screen. -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnProfile"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/profile"
+                    android:textColor="@color/accent" />
+
+                <!-- Level 2: search bar directly above the AVAILABLE pets ListView. -->
+                <EditText
+                    android:id="@+id/etSearchAvailable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:drawableStart="@android:drawable/ic_menu_search"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/search_hint"
+                    android:inputType="text"
+                    android:paddingStart="12dp"
+                    android:singleLine="true"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/accent" />
+
+                <!-- ListView inside ScrollView: wrap_content + nestedScrollingEnabled=false is mandatory. -->
+                <ListView
+                    android:id="@+id/lvAvailablePets"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:divider="@null"
+                    android:dividerHeight="0dp"
+                    android:nestedScrollingEnabled="false" />
+
+                <!-- Phase 8: shown only when the corresponding list is empty. -->
+                <TextView
+                    android:id="@+id/tvEmptyAvailable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="@string/empty_available_pets"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/my_requests"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ListView
+                    android:id="@+id/lvMyRequests"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:divider="@null"
+                    android:dividerHeight="0dp"
+                    android:nestedScrollingEnabled="false" />
+
+                <TextView
+                    android:id="@+id/tvEmptyRequests"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="@string/empty_requests"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <!-- First-load overlay; hidden after the simulated load completes. -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
-            android:orientation="vertical"
-            android:padding="24dp">
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/tvGreeting"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/greeting_user_empty"
-                android:textColor="@color/text_primary"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLogout"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/logout"
-                android:textColor="@color/accent" />
-
-            <!-- Level 3: user-only route to the profile screen. -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnProfile"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="@string/profile"
-                android:textColor="@color/accent" />
-
-            <!-- Level 2: search bar directly above the AVAILABLE pets ListView. -->
-            <EditText
-                android:id="@+id/etSearchAvailable"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:drawableStart="@android:drawable/ic_menu_search"
-                android:drawablePadding="8dp"
-                android:hint="@string/search_hint"
-                android:inputType="text"
-                android:paddingStart="12dp"
-                android:singleLine="true"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/accent" />
-
-            <!-- ListView inside ScrollView: wrap_content + nestedScrollingEnabled=false is mandatory. -->
-            <ListView
-                android:id="@+id/lvAvailablePets"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:nestedScrollingEnabled="false" />
-
-            <!-- Phase 8: shown only when the corresponding list is empty. -->
-            <TextView
-                android:id="@+id/tvEmptyAvailable"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="@string/empty_available_pets"
-                android:textColor="@color/text_primary"
-                android:textStyle="italic"
-                android:visibility="gone" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/my_requests"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <ListView
-                android:id="@+id/lvMyRequests"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:nestedScrollingEnabled="false" />
-
-            <TextView
-                android:id="@+id/tvEmptyRequests"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="@string/empty_requests"
-                android:textColor="@color/text_primary"
-                android:textStyle="italic"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-    </ScrollView>
+    </FrameLayout>
 
 </LinearLayout>
