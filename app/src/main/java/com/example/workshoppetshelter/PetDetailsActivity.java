@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,8 @@ import com.google.android.material.button.MaterialButton;
  * Level 2: MaterialToolbar back and native ACTION_SEND sharing.
  * i18n: every user-visible value is read from resources through PetLabels / getString.
  * Material 3: the toolbar title is replaced dynamically with the pet's name.
+ * Smart Features: favorite star for USER on AVAILABLE/PENDING pets and a certificate
+ *                 button only for the verified adopter of an ADOPTED pet.
  */
 public class PetDetailsActivity extends AppCompatActivity {
 
@@ -46,7 +49,9 @@ public class PetDetailsActivity extends AppCompatActivity {
     private TextView tvInfo;
     private TextView tvStatus;
     private TextView tvRequestedBy;
+    private ImageButton btnFavorite;
     private MaterialButton btnShare;
+    private MaterialButton btnViewCertificate;
     private MaterialButton btnRequestAdoption;
     private MaterialButton btnApprove;
     private MaterialButton btnReject;
@@ -74,13 +79,17 @@ public class PetDetailsActivity extends AppCompatActivity {
         tvInfo = findViewById(R.id.tvDetailsInfo);
         tvStatus = findViewById(R.id.tvDetailsStatus);
         tvRequestedBy = findViewById(R.id.tvDetailsRequestedBy);
+        btnFavorite = findViewById(R.id.btnFavorite);
         btnShare = findViewById(R.id.btnShare);
+        btnViewCertificate = findViewById(R.id.btnViewCertificate);
         btnRequestAdoption = findViewById(R.id.btnRequestAdoption);
         btnApprove = findViewById(R.id.btnApprove);
         btnReject = findViewById(R.id.btnReject);
         btnDelete = findViewById(R.id.btnDelete);
 
         btnShare.setOnClickListener(v -> sharePet());
+        btnFavorite.setOnClickListener(v -> toggleFavorite());
+        btnViewCertificate.setOnClickListener(v -> openCertificate());
 
         pet = db.getPetById(petId);
         if (pet == null) {
@@ -118,11 +127,13 @@ public class PetDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * Buttons are a direct projection of (role, status): no invalid action is ever offered.
-     * ADMIN: delete always; approve/reject only on PENDING; never request adoption.
-     * USER:  request adoption only on AVAILABLE; no admin action, ever.
+     * Buttons are a direct projection of (role, status, ownership): no invalid action is
+     * ever offered. ADMIN never sees the favorite star. The certificate is shown only
+     * when SQLite proves requested_by == the current user AND status == ADOPTED.
      */
     private void applyVisibilityRules(Pet pet) {
+        btnFavorite.setVisibility(View.GONE);
+        btnViewCertificate.setVisibility(View.GONE);
         btnRequestAdoption.setVisibility(View.GONE);
         btnApprove.setVisibility(View.GONE);
         btnReject.setVisibility(View.GONE);
@@ -137,8 +148,14 @@ public class PetDetailsActivity extends AppCompatActivity {
                 btnApprove.setVisibility(View.VISIBLE);
                 btnReject.setVisibility(View.VISIBLE);
             }
-        } else if ("AVAILABLE".equals(status)) {
-            btnRequestAdoption.setVisibility(View.VISIBLE);
+        } else {
+            if ("AVAILABLE".equals(status) || "PENDING".equals(status)) {
+                btnFavorite.setVisibility(View.VISIBLE);
+                refreshFavoriteIcon();
+            }
+            if ("ADOPTED".equals(status) && db.isAdopter(petId, userId)) {
+                btnViewCertificate.setVisibility(View.VISIBLE);
+            }
         }
 
         if ("PENDING".equals(status)) {
@@ -149,6 +166,49 @@ public class PetDetailsActivity extends AppCompatActivity {
                             : requester));
             tvRequestedBy.setVisibility(View.VISIBLE);
         }
+    }
+
+    /** Smart Features: immediate icon + content-description update, no screen exit needed. */
+    private void refreshFavoriteIcon() {
+        boolean favorite = db.isFavorite(userId, petId);
+        btnFavorite.setImageResource(favorite
+                ? android.R.drawable.btn_star_big_on
+                : android.R.drawable.btn_star_big_off);
+        btnFavorite.setContentDescription(getString(favorite
+                ? R.string.favorite_remove
+                : R.string.favorite_add));
+    }
+
+    private void toggleFavorite() {
+        if (pet == null || isAdmin) {
+            return;
+        }
+        btnFavorite.setEnabled(false);
+
+        boolean alreadyFavorite = db.isFavorite(userId, petId);
+        boolean ok = alreadyFavorite
+                ? db.removeFavorite(userId, petId)
+                : db.addFavorite(userId, petId);
+
+        showToast(getString(ok
+                ? (alreadyFavorite ? R.string.favorite_removed : R.string.favorite_added)
+                : R.string.error_update), ok);
+        refreshFavoriteIcon();
+        btnFavorite.setEnabled(true);
+    }
+
+    /** Smart Features: the adopter's name comes from the intent, with a session fallback. */
+    private void openCertificate() {
+        String name = getIntent().getStringExtra("user_name");
+        if (name == null || name.trim().isEmpty()) {
+            name = new SessionManager(this).getUserName();
+        }
+
+        Intent intent = new Intent(this, CertificateActivity.class);
+        intent.putExtra("user_name", name);
+        intent.putExtra("pet_name", pet == null ? null : pet.getName());
+        startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     private void wireActions() {

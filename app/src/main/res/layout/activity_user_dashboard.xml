@@ -59,6 +59,16 @@
                     android:text="@string/profile"
                     android:textColor="@color/accent" />
 
+                <!-- Smart Features: one-tap random available-pet suggestion. -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMatchMe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/match_me"
+                    android:textAllCaps="false"
+                    app:backgroundTint="@color/accent" />
+
                 <!-- Level 2: search bar directly above the AVAILABLE pets ListView. -->
                 <EditText
                     android:id="@+id/etSearchAvailable"
@@ -121,6 +131,36 @@
                     android:gravity="center"
                     android:padding="16dp"
                     android:text="@string/empty_requests"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="italic"
+                    android:visibility="gone" />
+
+                <!-- Smart Features: wishlist section, loaded from user_favorites. -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/my_favorites"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ListView
+                    android:id="@+id/lvFavorites"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:divider="@null"
+                    android:dividerHeight="0dp"
+                    android:nestedScrollingEnabled="false" />
+
+                <TextView
+                    android:id="@+id/tvEmptyFavorites"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="@string/empty_favorites"
                     android:textColor="@color/text_primary"
                     android:textStyle="italic"
                     android:visibility="gone" />

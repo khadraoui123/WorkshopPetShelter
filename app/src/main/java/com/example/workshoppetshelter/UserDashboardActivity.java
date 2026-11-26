@@ -3,6 +3,7 @@ package com.example.workshoppetshelter;
 
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +36,7 @@ import java.util.List;
  * Session: corrupted intents are rejected; logout clears session and returns to login.
  * Material 3: a MaterialToolbar replaces the old custom section header.
  * Phase B: first-load ProgressBar, MaterialCardView rows, and preserved search state.
+ * Smart Features: Match Me suggestion + favorites wishlist, both refreshed on resume.
  */
 public class UserDashboardActivity extends AppCompatActivity {
 
@@ -42,15 +45,19 @@ public class UserDashboardActivity extends AppCompatActivity {
     private UserDbHelper db;
     private SessionManager sessionManager;
     private long userId;
+    private String userName;
     private TextView tvGreeting;
     private ListView lvAvailablePets;
     private ListView lvMyRequests;
+    private ListView lvFavorites;
     private TextView tvEmptyAvailable;
     private TextView tvEmptyRequests;
+    private TextView tvEmptyFavorites;
     private EditText etSearchAvailable;
     private ProgressBar progressBar;
     private MaterialButton btnLogout;
     private MaterialButton btnProfile;
+    private MaterialButton btnMatchMe;
 
     private PetAdapter petAdapter;
     private boolean isFirstLoad = true;
@@ -99,8 +106,7 @@ public class UserDashboardActivity extends AppCompatActivity {
 
         userId = incomingUserId;
         sessionManager = new SessionManager(this);
-
-        String userName = getIntent().getStringExtra("user_name");
+        userName = getIntent().getStringExtra("user_name");
 
         db = new UserDbHelper(this);
 
@@ -117,12 +123,15 @@ public class UserDashboardActivity extends AppCompatActivity {
         tvGreeting = findViewById(R.id.tvGreeting);
         lvAvailablePets = findViewById(R.id.lvAvailablePets);
         lvMyRequests = findViewById(R.id.lvMyRequests);
+        lvFavorites = findViewById(R.id.lvFavorites);
         tvEmptyAvailable = findViewById(R.id.tvEmptyAvailable);
         tvEmptyRequests = findViewById(R.id.tvEmptyRequests);
+        tvEmptyFavorites = findViewById(R.id.tvEmptyFavorites);
         etSearchAvailable = findViewById(R.id.etSearchAvailable);
         progressBar = findViewById(R.id.progressBar);
         btnLogout = findViewById(R.id.btnLogout);
         btnProfile = findViewById(R.id.btnProfile);
+        btnMatchMe = findViewById(R.id.btnMatchMe);
 
         tvGreeting.setText(userName == null || userName.isEmpty()
                 ? getString(R.string.greeting_user_empty)
@@ -132,7 +141,10 @@ public class UserDashboardActivity extends AppCompatActivity {
                 openPetDetails((Pet) parent.getItemAtPosition(position)));
         lvMyRequests.setOnItemClickListener((parent, view, position, id) ->
                 openPetDetails((Pet) parent.getItemAtPosition(position)));
+        lvFavorites.setOnItemClickListener((parent, view, position, id) ->
+                openPetDetails((Pet) parent.getItemAtPosition(position)));
 
+        btnMatchMe.setOnClickListener(v -> showRandomPetSuggestion());
         setupSearch();
 
         btnProfile.setOnClickListener(v -> openProfile(userName, userEmail));
@@ -170,10 +182,10 @@ public class UserDashboardActivity extends AppCompatActivity {
     }
 
     /** Level 3: explicit extras requested by ProfileActivity. */
-    private void openProfile(String userName, String userEmail) {
+    private void openProfile(String name, String userEmail) {
         Intent intent = new Intent(this, ProfileActivity.class);
         intent.putExtra("user_id", userId);
-        intent.putExtra("user_name", userName);
+        intent.putExtra("user_name", name);
         intent.putExtra("user_email", userEmail);
         startActivity(intent);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -202,10 +214,36 @@ public class UserDashboardActivity extends AppCompatActivity {
         });
     }
 
+    /** Smart Features: SQLite draws one AVAILABLE pet; Java only presents the result. */
+    private void showRandomPetSuggestion() {
+        Pet suggested = db.getRandomAvailablePet();
+        if (suggested == null) {
+            showToast(getString(R.string.empty_available_pets), false);
+            return;
+        }
+
+        String name = suggested.getName() == null || suggested.getName().trim().isEmpty()
+                ? getString(R.string.empty_value)
+                : suggested.getName();
+        String species = PetLabels.labelForSpecies(this, suggested.getSpecies());
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.match_suggestion_title)
+                .setMessage(getString(R.string.match_suggestion_message, name, species))
+                .setPositiveButton(R.string.view_details, (dialog, which) ->
+                        openPetDetails(suggested))
+                .setNegativeButton(R.string.cancel, null)
+                .show();
+    }
+
     private void openPetDetails(Pet pet) {
+        if (pet == null) {
+            return;
+        }
         Intent intent = new Intent(this, PetDetailsActivity.class);
         intent.putExtra("pet_id", pet.getId());
         intent.putExtra("user_id", userId);
+        intent.putExtra("user_name", userName);
         intent.putExtra("user_role", Role.USER.name());
         startActivity(intent);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -261,6 +299,13 @@ public class UserDashboardActivity extends AppCompatActivity {
             requests = new ArrayList<>();
         }
 
+        // Smart Features: favorites are read on every resume, so removing one in details
+        // is reflected immediately when the user returns to the dashboard.
+        List<Pet> favorites = db.getFavoritePetsByUser(userId);
+        if (favorites == null) {
+            favorites = new ArrayList<>();
+        }
+
         /*
          * Give the adapter a COPY of the loaded data. ArrayAdapter.getFilter() saves its own
          * original-values snapshot, so our copy keeps the source list reusable and reversible.
@@ -273,6 +318,7 @@ public class UserDashboardActivity extends AppCompatActivity {
 
         lvAvailablePets.setAdapter(petAdapter);
         lvMyRequests.setAdapter(new PetAdapter(this, requests));
+        lvFavorites.setAdapter(new PetAdapter(this, new ArrayList<>(favorites)));
 
         // Re-apply a query that survived a rotation or a return from another screen.
         if (!query.isEmpty()) {
@@ -281,16 +327,19 @@ public class UserDashboardActivity extends AppCompatActivity {
 
         updatePetEmptyState();
         tvEmptyRequests.setVisibility(requests.isEmpty() ? View.VISIBLE : View.GONE);
+        tvEmptyFavorites.setVisibility(favorites.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private void setListsVisibility(int visibility) {
         lvAvailablePets.setVisibility(visibility);
         lvMyRequests.setVisibility(visibility);
+        lvFavorites.setVisibility(visibility);
     }
 
     private void fadeInLists() {
         startFadeIn(lvAvailablePets);
         startFadeIn(lvMyRequests);
+        startFadeIn(lvFavorites);
     }
 
     /** A fresh Animation instance per view avoids sharing mutable start-time state. */
@@ -305,6 +354,23 @@ public class UserDashboardActivity extends AppCompatActivity {
         }
         tvEmptyAvailable.setVisibility(
                 petAdapter.getCount() == 0 ? View.VISIBLE : View.GONE);
+    }
+
+    /** Same coloured Toast style as the other screens. */
+    @SuppressWarnings("deprecation")
+    private void showToast(String msg, boolean isSuccess) {
+        Toast toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+        View view = toast.getView();
+        if (view != null) {
+            view.setBackgroundResource(R.drawable.toast_bg);
+            TextView text = view.findViewById(android.R.id.message);
+            if (text != null) {
+                text.setTextColor(isSuccess
+                        ? Color.parseColor("#4CAF50")
+                        : Color.parseColor("#F44336"));
+            }
+        }
+        toast.show();
     }
 
     @Override

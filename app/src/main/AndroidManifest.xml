@@ -60,6 +60,12 @@
             android:label="@string/add_pet"
             android:exported="false" />
 
+        <!-- Smart Features: internal-only adoption certificate. -->
+        <activity
+            android:name=".CertificateActivity"
+            android:label="@string/title_certificate"
+            android:exported="false" />
+
         <!-- Level 3: user-only profile. Internal explicit intent, so exported="false". -->
         <activity
             android:name=".ProfileActivity"

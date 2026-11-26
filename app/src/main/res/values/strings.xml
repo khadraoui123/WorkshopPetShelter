@@ -136,4 +136,25 @@
     <string name="stat_users">Utilisateurs</string>
     <string name="stat_pending">En attente</string>
     <string name="stat_placeholder">0</string>
+
+    <!-- Smart Features: Match Me, favorites, adoption certificate. Keys are identical in values-en / values-ar. -->
+    <string name="match_me">🎲 Suggérez-moi un animal !</string>
+    <string name="match_suggestion_title">Notre suggestion 🐾</string>
+    <string name="match_suggestion_message">Nous vous proposons de rencontrer %1$s (%2$s) !</string>
+    <string name="view_details">Voir les détails</string>
+    <string name="my_favorites">Mes Favoris</string>
+    <string name="empty_favorites">Aucun favori.</string>
+    <string name="favorite_add">Ajouter aux favoris</string>
+    <string name="favorite_remove">Retirer des favoris</string>
+    <string name="favorite_added">Ajouté aux favoris</string>
+    <string name="favorite_removed">Retiré des favoris</string>
+    <string name="certificate_emoji">📜</string>
+    <string name="title_certificate">Certificat d\'Adoption</string>
+    <string name="certificate_intro">Nous certifions que</string>
+    <string name="certificate_adopted">a officiellement adopté</string>
+    <string name="certificate_team">L\'équipe du Refuge</string>
+    <string name="btn_share_certificate">Partager le certificat</string>
+    <string name="certificate_share_format">J\'ai officiellement adopté %1$s au Refuge des Animaux ! 🐾</string>
+    <string name="btn_view_certificate">📜 Voir mon certificat</string>
+    <string name="certificate_date_format">le %1$s</string>
 </resources>

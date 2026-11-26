@@ -136,4 +136,25 @@
     <string name="stat_users">المستخدمون</string>
     <string name="stat_pending">قيد الانتظار</string>
     <string name="stat_placeholder">0</string>
+
+    <!-- Smart Features: Match Me, favorites, adoption certificate. Keys are identical in values / values-en. -->
+    <string name="match_me">🎲 اقترح لي حيوانًا!</string>
+    <string name="match_suggestion_title">اقتراحنا 🐾</string>
+    <string name="match_suggestion_message">نقترح عليك مقابلة %1$s (%2$s)!</string>
+    <string name="view_details">عرض التفاصيل</string>
+    <string name="my_favorites">المفضلة لديّ</string>
+    <string name="empty_favorites">لا توجد مفضلة حتى الآن.</string>
+    <string name="favorite_add">إضافة إلى المفضلة</string>
+    <string name="favorite_remove">إزالة من المفضلة</string>
+    <string name="favorite_added">تمت الإضافة إلى المفضلة</string>
+    <string name="favorite_removed">تمت الإزالة من المفضلة</string>
+    <string name="certificate_emoji">📜</string>
+    <string name="title_certificate">شهادة التبني</string>
+    <string name="certificate_intro">نشهد بأن</string>
+    <string name="certificate_adopted">تبنى رسميًا</string>
+    <string name="certificate_team">فريق الملجأ</string>
+    <string name="btn_share_certificate">مشاركة الشهادة</string>
+    <string name="certificate_share_format">لقد تبنيت رسميًا %1$s في ملجأ الحيوانات! 🐾</string>
+    <string name="btn_view_certificate">📜 عرض شهادتي</string>
+    <string name="certificate_date_format">في %1$s</string>
 </resources>

@@ -4,4 +4,7 @@
     <color name="text_primary">#3E2723</color>
     <color name="accent">#6D4C41</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- Certificate colors are intentionally fixed: a document keeps its paper look in dark mode. -->
+    <color name="certificate_background">#FFF8E1</color>
+    <color name="certificate_title">#5D4037</color>
 </resources>

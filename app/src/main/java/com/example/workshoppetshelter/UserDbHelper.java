@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Base64;
 
 import java.nio.charset.StandardCharsets;
@@ -27,14 +28,19 @@ import javax.crypto.spec.PBEKeySpec;
  * is a workshop-safe compromise: slow enough against offline guessing, fast
  * enough on a phone/emulator. A production app should re-evaluate this value
  * every couple of years and store it with the hash for future migrations.
+ *
+ * Phase 2 Smart Features (DB_VERSION 2): adds user_favorites. The version-1
+ * tables users and pets are NEVER dropped during upgrade, so accounts, passwords,
+ * pets and adoption history survive the migration.
  */
 public class UserDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "workshop_pet_shelter.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static final String TABLE_USERS = "users";
     private static final String TABLE_PETS = "pets";
+    private static final String TABLE_FAVORITES = "user_favorites";
 
     // Crypto parameters -- deliberately explicit so they can be reviewed by a professor.
     private static final int SALT_LENGTH_BYTES = 16;   // 128-bit salt
@@ -70,6 +76,21 @@ public class UserDbHelper extends SQLiteOpenHelper {
                     "FOREIGN KEY (requested_by) REFERENCES users(id)" +
                     ")";
 
+    /**
+     * Smart Features: one wishlist row per (user, pet). UNIQUE makes the pair
+     * itself the identity, so a favorite cannot be inserted twice even when two
+     * taps race or two devices write concurrently.
+     */
+    private static final String CREATE_FAVORITES =
+            "CREATE TABLE user_favorites (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "user_id INTEGER, " +
+                    "pet_id INTEGER, " +
+                    "UNIQUE(user_id, pet_id), " +
+                    "FOREIGN KEY(user_id) REFERENCES users(id), " +
+                    "FOREIGN KEY(pet_id) REFERENCES pets(id)" +
+                    ")";
+
     private static final String[] USER_COLUMNS_WITH_SECRET = {
             "id", "full_name", "email", "password_hash", "salt", "role"
     };
@@ -98,6 +119,7 @@ public class UserDbHelper extends SQLiteOpenHelper {
         insertAccount(db, "Wajih Khadraoui", "khadraouiwajih3@gmail.com", "wajih@123", Role.ADMIN);
 
         db.execSQL(CREATE_PETS);
+        db.execSQL(CREATE_FAVORITES);
         insertDefaultPet(db, "Rex", "Chien", 3);
         insertDefaultPet(db, "Minou", "Chat", 2);
         insertDefaultPet(db, "Bunny", "Lapin", 1);
@@ -109,11 +131,15 @@ public class UserDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // WORKSHOP ONLY: dropping tables loses all data. Acceptable here because this is a
-        // university exercise with seed data. A real app would run ALTER TABLE migrations.
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PETS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        onCreate(db);
+        /*
+         * SAFE MIGRATION: only the NEW table is touched. Never drop users or pets here:
+         * that would destroy accounts, hashed passwords, pets and adoption history.
+         * onCreate(db) must NOT be called: those version-1 tables already exist.
+         */
+        if (oldVersion < 2) {
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITES);
+            db.execSQL(CREATE_FAVORITES);
+        }
     }
 
     /** Creates a fresh 128-bit salt and encodes it with Base64 NO_WRAP for SQLite TEXT storage. */
@@ -353,21 +379,97 @@ public class UserDbHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Smart Features: Match Me. SQLite does the random draw and returns at most one row.
+     * ORDER BY RANDOM() is fine for a small shelter table; see the explanation in the
+     * final report for why a huge table would need a different strategy.
+     */
+    public Pet getRandomAvailablePet() {
+        String sql = "SELECT " + PET_SELECT + " FROM " + TABLE_PETS + " p "
+                + "LEFT JOIN " + TABLE_USERS + " u ON p.requested_by = u.id "
+                + "WHERE p.status = 'AVAILABLE' ORDER BY RANDOM() LIMIT 1";
+        List<Pet> pets = petListFromSql(sql, null);
+        return pets.isEmpty() ? null : pets.get(0);
+    }
+
+    /**
+     * Smart Features: INSERT OR IGNORE makes a repeated tap harmless. UNIQUE(user_id, pet_id)
+     * is enforced inside SQLite, so there is no check-then-insert race in Java.
+     */
+    public boolean addFavorite(long userId, long petId) {
+        if (userId <= 0 || petId <= 0) {
+            return false;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        SQLiteStatement statement = db.compileStatement(
+                "INSERT OR IGNORE INTO " + TABLE_FAVORITES + " (user_id, pet_id) VALUES (?, ?)");
+        try {
+            statement.bindLong(1, userId);
+            statement.bindLong(2, petId);
+            return statement.executeInsert() != -1;
+        } finally {
+            statement.close();
+        }
+    }
+
+    public boolean removeFavorite(long userId, long petId) {
+        if (userId <= 0 || petId <= 0) {
+            return false;
+        }
+        return getWritableDatabase().delete(
+                TABLE_FAVORITES,
+                "user_id = ? AND pet_id = ?",
+                new String[]{String.valueOf(userId), String.valueOf(petId)}) > 0;
+    }
+
+    /** @return true only when COUNT(*) > 0 for this exact (user, pet) pair. */
+    public boolean isFavorite(long userId, long petId) {
+        if (userId <= 0 || petId <= 0) {
+            return false;
+        }
+        return countSingleInteger(
+                "SELECT COUNT(*) FROM " + TABLE_FAVORITES
+                        + " WHERE user_id = ? AND pet_id = ?",
+                new String[]{String.valueOf(userId), String.valueOf(petId)}) > 0;
+    }
+
+    /** Wishlist query: favorites JOIN pets, with the same LEFT JOIN for the requester name. */
+    public List<Pet> getFavoritePetsByUser(long userId) {
+        if (userId <= 0) {
+            return new ArrayList<>();
+        }
+        String sql = "SELECT " + PET_SELECT + " FROM " + TABLE_FAVORITES + " f "
+                + "INNER JOIN " + TABLE_PETS + " p ON p.id = f.pet_id "
+                + "LEFT JOIN " + TABLE_USERS + " u ON p.requested_by = u.id "
+                + "WHERE f.user_id = ? ORDER BY p.id ASC";
+        return petListFromSql(sql, new String[]{String.valueOf(userId)});
+    }
+
+    /**
+     * Certificate gate: proves the CURRENT user owns this ADOPTED pet. Comparing the
+     * displayed requester NAME would be ambiguous when two users share a name; the
+     * stored requested_by id is authoritative.
+     */
+    public boolean isAdopter(long petId, long userId) {
+        if (petId <= 0 || userId <= 0) {
+            return false;
+        }
+        String sql = "SELECT 1 FROM " + TABLE_PETS
+                + " WHERE id = ? AND requested_by = ? AND status = 'ADOPTED'";
+        try (Cursor cursor = getReadableDatabase().rawQuery(
+                sql, new String[]{String.valueOf(petId), String.valueOf(userId)})) {
+            return cursor.moveToFirst();
+        }
+    }
+
+    /**
      * Level 3: SQL aggregation. The database counts matching rows and returns ONE value,
      * so we do not load every pet into Java memory just to call size(). A missing user_id
      * simply matches no rows and returns 0.
      */
     public int countAdoptedPetsByUser(long userId) {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery(
+        return countSingleInteger(
                 "SELECT COUNT(*) FROM pets WHERE requested_by = ? AND status = 'ADOPTED'",
                 new String[]{String.valueOf(userId)});
-        int count = 0;
-        if (c.moveToFirst()) {
-            count = c.getInt(0);
-        }
-        c.close();
-        return count;
     }
 
     /**
@@ -389,7 +491,11 @@ public class UserDbHelper extends SQLiteOpenHelper {
             sql += " WHERE " + selection;
         }
         sql += " ORDER BY p.id ASC";
+        return petListFromSql(sql, args);
+    }
 
+    /** One cursor-to-Pet mapper for every query that selects PET_SELECT aliases. */
+    private List<Pet> petListFromSql(String sql, String[] args) {
         List<Pet> pets = new ArrayList<>();
         try (Cursor cursor = getReadableDatabase().rawQuery(sql, args)) {
             while (cursor.moveToNext()) {
@@ -458,7 +564,7 @@ public class UserDbHelper extends SQLiteOpenHelper {
     /**
      * Phase 7 addition: fetch a single pet with the SAME LEFT JOIN used by queryPets(),
      * so Pet.requestedBy contains the adopter's full name (or null when nobody requested it).
-     * Reusing queryPets avoids duplicating the join/alias/null-handling logic.
+     * Reusing the shared mapper avoids duplicating the join/alias/null-handling logic.
      *
      * @return the pet, or null when no row has this id.
      */
@@ -503,7 +609,12 @@ public class UserDbHelper extends SQLiteOpenHelper {
 
     /** try-with-resources closes the Cursor on every path, including exceptions. */
     private int countSingleInteger(String sql) {
-        try (Cursor cursor = getReadableDatabase().rawQuery(sql, null)) {
+        return countSingleInteger(sql, null);
+    }
+
+    /** Parameterized COUNT(*) helper shared by statistics, favorites and the adopter gate. */
+    private int countSingleInteger(String sql, String[] args) {
+        try (Cursor cursor = getReadableDatabase().rawQuery(sql, args)) {
             // COUNT(*) always returns one row; 0 is a safe fallback for a corrupt result.
             return cursor.moveToFirst() ? cursor.getInt(0) : 0;
         }

@@ -6,13 +6,33 @@
     android:background="@color/app_background"
     android:orientation="vertical">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <!-- FrameLayout lets the favorite control sit in the toolbar's top-right slot. -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorSurface"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="@string/title_pet_details" />
+        android:background="?attr/colorSurface">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:title="@string/title_pet_details" />
+
+        <ImageButton
+            android:id="@+id/btnFavorite"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/favorite_add"
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:src="@android:drawable/btn_star_big_off"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -69,6 +89,17 @@
                 android:layout_marginTop="24dp"
                 android:text="@string/share"
                 android:textAllCaps="false"
+                app:backgroundTint="@color/accent" />
+
+            <!-- Smart Features: visible only to the real adopter of an ADOPTED pet. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnViewCertificate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/btn_view_certificate"
+                android:textAllCaps="false"
+                android:visibility="gone"
                 app:backgroundTint="@color/accent" />
 
             <com.google.android.material.button.MaterialButton

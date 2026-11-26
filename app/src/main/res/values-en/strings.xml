@@ -136,4 +136,25 @@
     <string name="stat_users">Users</string>
     <string name="stat_pending">Pending</string>
     <string name="stat_placeholder">0</string>
+
+    <!-- Smart Features: Match Me, favorites, adoption certificate. Keys are identical in values / values-ar. -->
+    <string name="match_me">🎲 Suggest me a pet!</string>
+    <string name="match_suggestion_title">Our suggestion 🐾</string>
+    <string name="match_suggestion_message">We suggest meeting %1$s (%2$s)!</string>
+    <string name="view_details">View details</string>
+    <string name="my_favorites">My Favorites</string>
+    <string name="empty_favorites">No favorites yet.</string>
+    <string name="favorite_add">Add to favorites</string>
+    <string name="favorite_remove">Remove from favorites</string>
+    <string name="favorite_added">Added to favorites</string>
+    <string name="favorite_removed">Removed from favorites</string>
+    <string name="certificate_emoji">📜</string>
+    <string name="title_certificate">Adoption Certificate</string>
+    <string name="certificate_intro">We certify that</string>
+    <string name="certificate_adopted">officially adopted</string>
+    <string name="certificate_team">The Shelter Team</string>
+    <string name="btn_share_certificate">Share certificate</string>
+    <string name="certificate_share_format">I officially adopted %1$s at Pet Shelter! 🐾</string>
+    <string name="btn_view_certificate">📜 View my certificate</string>
+    <string name="certificate_date_format">on %1$s</string>
 </resources>
