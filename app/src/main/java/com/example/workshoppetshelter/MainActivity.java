@@ -17,7 +17,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -114,18 +113,14 @@ public class MainActivity extends AppCompatActivity {
 
     /** In-app language switcher: French (default), Arabic (RTL), English. */
     private void showLanguageDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.language_dialog_title)
-                .setMessage(R.string.language_dialog_message)
-                .setItems(new CharSequence[]{
-                        getString(R.string.language_fr),
-                        getString(R.string.language_ar),
-                        getString(R.string.language_en)
-                }, (dialog, which) -> {
-                    String language = which == 0 ? "fr" : which == 1 ? "ar" : "en";
-                    LocaleHelper.setLocale(this, language);
+        String[] languages = {"Français", "العربية", "English"};
+        String[] codes = {"fr", "ar", "en"};
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Choisir la langue / اختر اللغة / Choose language")
+                .setItems(languages, (dialog, which) -> {
+                    LocaleHelper.setLocale(MainActivity.this, codes[which]);
+                    recreate();
                 })
-                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 

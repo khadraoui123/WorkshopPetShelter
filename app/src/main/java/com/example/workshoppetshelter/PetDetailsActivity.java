@@ -149,6 +149,14 @@ public class PetDetailsActivity extends AppCompatActivity {
                 btnReject.setVisibility(View.VISIBLE);
             }
         } else {
+            // BUG FIX: a normal USER must see the adoption action while the pet is
+            // genuinely AVAILABLE. PENDING/ADOPTED pets must not offer it again.
+            if (!isAdmin && "AVAILABLE".equals(status)) {
+                btnRequestAdoption.setVisibility(View.VISIBLE);
+            } else {
+                btnRequestAdoption.setVisibility(View.GONE);
+            }
+
             if ("AVAILABLE".equals(status) || "PENDING".equals(status)) {
                 btnFavorite.setVisibility(View.VISIBLE);
                 refreshFavoriteIcon();

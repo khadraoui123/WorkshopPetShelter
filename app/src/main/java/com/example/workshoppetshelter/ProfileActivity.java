@@ -13,9 +13,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 
+import java.util.Locale;
+
 /**
  * Level 3: profile for the adopter (USER) dashboard.
  * Phase C: the name can be edited; the database AND the session are updated together.
+ * Bug-fix polish: Material 3 cards, an initials avatar and a compact icon edit action.
  *
  * The screen receives user_id, user_name and user_email from UserDashboardActivity.
  * It is internal-only (exported="false" in the manifest) and is never reachable from
@@ -29,6 +32,7 @@ public class ProfileActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private long userId;
     private String currentName;
+    private TextView tvAvatarInitial;
     private TextView tvProfileName;
     private TextView tvProfileEmail;
     private TextView tvProfileRole;
@@ -56,6 +60,7 @@ public class ProfileActivity extends AppCompatActivity {
             currentName = "";
         }
 
+        tvAvatarInitial = findViewById(R.id.tvAvatarInitial);
         tvProfileName = findViewById(R.id.tvProfileName);
         tvProfileEmail = findViewById(R.id.tvProfileEmail);
         tvProfileRole = findViewById(R.id.tvProfileRole);
@@ -66,6 +71,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
         btnEditName.setOnClickListener(v -> showEditNameDialog());
 
+        updateAvatarInitial(currentName);
         tvProfileName.setText(getString(R.string.profile_name_format,
                 currentName.isEmpty() ? getString(R.string.empty_value) : currentName));
         tvProfileEmail.setText(getString(R.string.profile_email_format,
@@ -75,6 +81,17 @@ public class ProfileActivity extends AppCompatActivity {
         // This Activity is USER-only; no extra intent field is needed for the role.
         tvProfileRole.setText(getString(R.string.profile_role_format,
                 getString(R.string.role_user)));
+    }
+
+    /**
+     * One character, uppercased with the device locale. Arabic works because the
+     * character itself is preserved; only Latin case conversion changes anything.
+     */
+    private void updateAvatarInitial(String name) {
+        String initial = name == null || name.trim().isEmpty()
+                ? "?"
+                : name.trim().substring(0, 1).toUpperCase(Locale.getDefault());
+        tvAvatarInitial.setText(initial);
     }
 
     /**
@@ -110,6 +127,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     currentName = newName;
                     tvProfileName.setText(getString(R.string.profile_name_format, newName));
+                    updateAvatarInitial(newName);
 
                     // Keep the session in sync: SplashActivity reads the NAME from here, so a
                     // stale session would route back to the dashboard with the old greeting.
