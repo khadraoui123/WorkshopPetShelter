@@ -126,4 +126,14 @@
     <string name="language_en">English</string>
     <string name="language_button">Changer la langue</string>
     <string name="language_globe">🌐</string>
+
+    <!-- Phase C: edit profile + admin statistics. Keys are identical in values-en / values-ar. -->
+    <string name="edit">Modifier</string>
+    <string name="edit_name_title">Modifier le nom</string>
+    <string name="name_updated">Nom mis à jour</string>
+    <string name="error_update">Erreur</string>
+    <string name="stat_pets">Animaux</string>
+    <string name="stat_users">Utilisateurs</string>
+    <string name="stat_pending">En attente</string>
+    <string name="stat_placeholder">0</string>
 </resources>

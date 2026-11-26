@@ -50,6 +50,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
     private TextView tvEmptyPets;
     private TextView tvEmptyUsers;
     private TextView tvEmptyAdopted;
+    private TextView tvStatPets;
+    private TextView tvStatUsers;
+    private TextView tvStatPending;
     private EditText etSearchPets;
     private ProgressBar progressBar;
     private FloatingActionButton fabAddPet;
@@ -112,6 +115,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
         tvEmptyPets = findViewById(R.id.tvEmptyPets);
         tvEmptyUsers = findViewById(R.id.tvEmptyUsers);
         tvEmptyAdopted = findViewById(R.id.tvEmptyAdopted);
+        tvStatPets = findViewById(R.id.tvStatPets);
+        tvStatUsers = findViewById(R.id.tvStatUsers);
+        tvStatPending = findViewById(R.id.tvStatPending);
         etSearchPets = findViewById(R.id.etSearchPets);
         progressBar = findViewById(R.id.progressBar);
         fabAddPet = findViewById(R.id.fabAddPet);
@@ -200,6 +206,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     return;
                 }
                 loadDashboardData(query);
+                updateStatistics();
                 progressBar.setVisibility(View.GONE);
                 setListsVisibility(View.VISIBLE);
                 isFirstLoad = false;
@@ -210,7 +217,16 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         // Returning from details/add: fresh data, no spinner flash, same search filter.
         loadDashboardData(query);
+        // COUNT(*) values are dynamic: approving a request must lower the pending count.
+        updateStatistics();
         fadeInLists();
+    }
+
+    /** Phase C: three SQLite aggregations; refreshed on every resume, never cached. */
+    private void updateStatistics() {
+        tvStatPets.setText(String.valueOf(db.getTotalPetsCount()));
+        tvStatUsers.setText(String.valueOf(db.getTotalUsersCount()));
+        tvStatPending.setText(String.valueOf(db.getPendingRequestsCount()));
     }
 
     /** Reads the search field defensively; EditText text can be null during restoration. */

@@ -49,6 +49,16 @@
             android:textColor="@color/text_primary"
             android:textSize="16sp" />
 
+        <!-- Phase C: edit the display name; opens a dialog pre-filled with the current name. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEditName"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/edit"
+            android:textColor="@color/accent" />
+
         <TextView
             android:id="@+id/tvProfileEmail"
             android:layout_width="match_parent"

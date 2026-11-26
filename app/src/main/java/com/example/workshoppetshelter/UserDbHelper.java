@@ -466,4 +466,46 @@ public class UserDbHelper extends SQLiteOpenHelper {
         List<Pet> pets = queryPets("p.id = ?", new String[]{String.valueOf(petId)});
         return pets.isEmpty() ? null : pets.get(0);
     }
+
+    /**
+     * Phase C: rename a user. The parameterized WHERE clause keeps ids (longs) out of the
+     * SQL text, and SQLite's change count tells us whether the row existed, so the caller
+     * can update the UI and the session ONLY when the database actually changed.
+     *
+     * @return true when at least one row was updated.
+     */
+    public boolean updateUserName(long userId, String newName) {
+        if (userId <= 0 || newName == null || newName.trim().isEmpty()) {
+            return false; // Defensive: never write a blank name to a NOT NULL column.
+        }
+        ContentValues values = new ContentValues();
+        values.put("full_name", newName.trim());
+        int rows = getWritableDatabase().update(
+                TABLE_USERS, values, "id = ?", new String[]{String.valueOf(userId)});
+        return rows > 0;
+    }
+
+    /**
+     * Phase C: dashboard statistics. Each COUNT(*) is computed inside SQLite, so no pet or
+     * user objects are allocated in Java. All three share one cursor-closing helper.
+     */
+    public int getTotalPetsCount() {
+        return countSingleInteger("SELECT COUNT(*) FROM pets");
+    }
+
+    public int getTotalUsersCount() {
+        return countSingleInteger("SELECT COUNT(*) FROM users");
+    }
+
+    public int getPendingRequestsCount() {
+        return countSingleInteger("SELECT COUNT(*) FROM pets WHERE status = 'PENDING'");
+    }
+
+    /** try-with-resources closes the Cursor on every path, including exceptions. */
+    private int countSingleInteger(String sql) {
+        try (Cursor cursor = getReadableDatabase().rawQuery(sql, null)) {
+            // COUNT(*) always returns one row; 0 is a safe fallback for a corrupt result.
+            return cursor.moveToFirst() ? cursor.getInt(0) : 0;
+        }
+    }
 }

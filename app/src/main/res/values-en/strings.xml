@@ -126,4 +126,14 @@
     <string name="language_en">English</string>
     <string name="language_button">Change language</string>
     <string name="language_globe">🌐</string>
+
+    <!-- Phase C: edit profile + admin statistics. Keys are identical in values / values-ar. -->
+    <string name="edit">Edit</string>
+    <string name="edit_name_title">Edit name</string>
+    <string name="name_updated">Name updated</string>
+    <string name="error_update">Error</string>
+    <string name="stat_pets">Pets</string>
+    <string name="stat_users">Users</string>
+    <string name="stat_pending">Pending</string>
+    <string name="stat_placeholder">0</string>
 </resources>
