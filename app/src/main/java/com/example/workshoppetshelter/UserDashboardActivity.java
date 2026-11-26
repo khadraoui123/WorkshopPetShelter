@@ -81,6 +81,7 @@ public class UserDashboardActivity extends AppCompatActivity {
         long incomingUserId = getIntent().getLongExtra("user_id", -1L);
         if (incomingUserId == -1L) {
             startActivity(new Intent(this, MainActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             finish();
             return;
         }
@@ -148,6 +149,7 @@ public class UserDashboardActivity extends AppCompatActivity {
                     // Explicit navigation is mandatory: finish() alone would let Splash
                     // read a stale/cleared session and skip the login screen.
                     startActivity(new Intent(this, MainActivity.class));
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     finish();
                 })
                 .setNegativeButton(R.string.cancel, null)
@@ -174,6 +176,7 @@ public class UserDashboardActivity extends AppCompatActivity {
         intent.putExtra("user_name", userName);
         intent.putExtra("user_email", userEmail);
         startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     /** Level 2: ArrayAdapter's Filterable implementation does all the work in memory. */
@@ -205,6 +208,7 @@ public class UserDashboardActivity extends AppCompatActivity {
         intent.putExtra("user_id", userId);
         intent.putExtra("user_role", Role.USER.name());
         startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     @Override

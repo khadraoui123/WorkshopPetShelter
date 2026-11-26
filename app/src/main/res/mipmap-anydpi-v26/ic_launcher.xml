@@ -1,4 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!-- E:\WorkshopPetShelter\app\src\main\res\mipmap-anydpi-v26\ic_launcher.xml -->
+<!--
+  PNG alternative: in Android Studio, right-click app/src/main/res → New → Image Asset,
+  choose "Launcher Icons (Adaptive and Legacy)", then replace these XML assets.
+-->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/ic_launcher_background" />
     <foreground android:drawable="@drawable/ic_launcher_foreground" />

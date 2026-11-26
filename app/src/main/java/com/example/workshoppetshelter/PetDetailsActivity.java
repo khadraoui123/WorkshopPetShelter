@@ -233,6 +233,7 @@ public class PetDetailsActivity extends AppCompatActivity {
 
         try {
             startActivity(Intent.createChooser(shareIntent, getString(R.string.share_via)));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } catch (ActivityNotFoundException e) {
             showToast(getString(R.string.error_no_share_app), false);
         }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- E:\WorkshopPetShelter\app\src\main\res\values\ic_launcher_background.xml -->
+<resources>
+    <!--
+      Dedicated default-configuration launcher background. It used to live in
+      colors.xml; keeping it here avoids a duplicate resource in the same config.
+    -->
+    <color name="ic_launcher_background">#6D4C41</color>
+</resources>

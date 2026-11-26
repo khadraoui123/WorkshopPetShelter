@@ -78,6 +78,7 @@ public class AboutActivity extends AppCompatActivity {
         Intent dial = new Intent(Intent.ACTION_DIAL, Uri.parse(PHONE_URI));
         try {
             startActivity(dial);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } catch (ActivityNotFoundException e) {
             showToast(getString(R.string.error_no_dialer), false);
         }
@@ -88,6 +89,7 @@ public class AboutActivity extends AppCompatActivity {
         Intent web = new Intent(Intent.ACTION_VIEW, Uri.parse(WEBSITE_URI));
         try {
             startActivity(web);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         } catch (ActivityNotFoundException e) {
             showToast(getString(R.string.error_no_browser), false);
         }

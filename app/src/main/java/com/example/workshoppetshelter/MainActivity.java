@@ -94,16 +94,22 @@ public class MainActivity extends AppCompatActivity {
 
         btnLogin.setOnClickListener(v -> login());
 
-        btnGoRegister.setOnClickListener(v ->
-                startActivity(new Intent(this, RegisterActivity.class)));
+        btnGoRegister.setOnClickListener(v -> {
+            startActivity(new Intent(this, RegisterActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
 
         // Forgot password: explicit internal navigation to the reset screen.
-        tvForgotPassword.setOnClickListener(v ->
-                startActivity(new Intent(this, ResetPasswordActivity.class)));
+        tvForgotPassword.setOnClickListener(v -> {
+            startActivity(new Intent(this, ResetPasswordActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
 
         // About: explicit internal navigation; the system intents live in AboutActivity.
-        tvAbout.setOnClickListener(v ->
-                startActivity(new Intent(this, AboutActivity.class)));
+        tvAbout.setOnClickListener(v -> {
+            startActivity(new Intent(this, AboutActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        });
     }
 
     /** In-app language switcher: French (default), Arabic (RTL), English. */
@@ -249,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("user_role", user.getRole().name());
 
         startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         finish(); // The login screen must not stay on the back stack.
     }
 }

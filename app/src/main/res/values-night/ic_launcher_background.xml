@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- E:\WorkshopPetShelter\app\src\main\res\values-night\ic_launcher_background.xml -->
+<resources>
+    <!-- Dark-theme launcher tint; same resource name, night configuration only. -->
+    <color name="ic_launcher_background">#A1887F</color>
+</resources>

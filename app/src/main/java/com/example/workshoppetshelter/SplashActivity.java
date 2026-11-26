@@ -44,6 +44,7 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         finish(); // Never keep the splash on the back stack.
     };
 

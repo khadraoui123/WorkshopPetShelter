@@ -1,13 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!-- E:\WorkshopPetShelter\app\src\main\res\drawable\ic_launcher_foreground.xml -->
+<!--
+  Adaptive-icon foreground: 108x108dp canvas. The visible paw stays inside the
+  centered 72x72dp safe zone (x/y from 18 to 90) so no launcher mask can clip it.
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+
+    <!-- Four toe pads: x 34.5-81.5, y 25-51. -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M54,30m-18,0a18,18 0,1 1,36 0a18,18 0,1 1,-36 0" />
+        android:fillColor="@android:color/white"
+        android:pathData="M34.5,44a6.5,7 0,1 0,13 0a6.5,7 0,1 0,-13 0" />
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M54,54m-26,0a26,26 0,0 1,52 0v20a4,4 0,0 1,-4 4h-44a4,4 0,0 1,-4 -4v-20z" />
+        android:fillColor="@android:color/white"
+        android:pathData="M44.5,32.5a6,7.5 0,1 0,12 0a6,7.5 0,1 0,-12 0" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M57.5,32.5a6,7.5 0,1 0,12 0a6,7.5 0,1 0,-12 0" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M68.5,44a6.5,7 0,1 0,13 0a6.5,7 0,1 0,-13 0" />
+
+    <!-- Main pad: x 32-76, y 50-85.6. -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M54,50C44,50 36,57 34,66C32,76 40,84 49,85C52,85.6 56,85.6 59,85C68,84 76,76 74,66C72,57 64,50 54,50Z" />
+
 </vector>

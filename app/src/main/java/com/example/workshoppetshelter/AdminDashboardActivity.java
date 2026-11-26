@@ -87,6 +87,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         long incomingUserId = getIntent().getLongExtra("user_id", -1L);
         if (incomingUserId == -1L) {
             startActivity(new Intent(this, MainActivity.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             finish();
             return;
         }
@@ -138,6 +139,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
             Intent intent = new Intent(this, AddPetActivity.class);
             intent.putExtra("user_role", Role.ADMIN.name());
             startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
 
         btnLogout.setOnClickListener(v -> confirmLogout());
@@ -153,6 +155,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     // Explicit navigation is mandatory: finish() alone would let Splash
                     // read a stale/cleared session and skip the login screen.
                     startActivity(new Intent(this, MainActivity.class));
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     finish();
                 })
                 .setNegativeButton(R.string.cancel, null)
@@ -164,6 +167,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         intent.putExtra("pet_id", pet.getId());
         intent.putExtra("user_role", Role.ADMIN.name());
         startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     /** Level 2: ArrayAdapter's Filterable implementation does all the work in memory. */

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ public class UserAdapter extends ArrayAdapter<UserProfile> {
             convertView = LayoutInflater.from(getContext())
                     .inflate(R.layout.row_user, parent, false);
             holder = new ViewHolder();
+            holder.initial = convertView.findViewById(R.id.tvInitial);
             holder.name = convertView.findViewById(R.id.tvUserName);
             holder.email = convertView.findViewById(R.id.tvUserEmail);
             holder.role = convertView.findViewById(R.id.tvUserRole);
@@ -36,12 +38,25 @@ public class UserAdapter extends ArrayAdapter<UserProfile> {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        // The row root is clickable for its ripple. Forward its click to the ListView so
+        // the existing setOnItemClickListener() keeps working (AOSP skips performItemClick
+        // when the child declares android:focusable="true").
+        bindRowClick(convertView, parent, position);
+
         UserProfile user = getItem(position);
         if (user == null) {
+            holder.initial.setText("?");
+            holder.name.setText("");
+            holder.email.setText("");
+            holder.role.setText("");
             return convertView;
         }
 
-        holder.name.setText(user.getFullName());
+        String name = user.getFullName();
+        String initial = (name != null && !name.isEmpty()) ? name.substring(0, 1).toUpperCase() : "?";
+        holder.initial.setText(initial);
+
+        holder.name.setText(name);
         holder.email.setText(user.getEmail());
 
         Role role = user.getRole();
@@ -56,7 +71,18 @@ public class UserAdapter extends ArrayAdapter<UserProfile> {
         return convertView;
     }
 
+    /** Keeps MaterialCardView ripple + ListView item clicks working together. */
+    private void bindRowClick(View row, ViewGroup parent, int position) {
+        row.setOnClickListener(v -> {
+            if (v.isEnabled() && parent instanceof AdapterView<?>) {
+                ((AdapterView<?>) parent).performItemClick(v, position, getItemId(position));
+            }
+        });
+        row.setEnabled(true);
+    }
+
     static class ViewHolder {
+        TextView initial;
         TextView name;
         TextView email;
         TextView role;

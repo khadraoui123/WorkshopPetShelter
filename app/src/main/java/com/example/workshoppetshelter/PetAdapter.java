@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -36,8 +37,15 @@ public class PetAdapter extends ArrayAdapter<Pet> {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        // The card root is clickable for its ripple; forward the click to the ListView
+        // so dashboards' setOnItemClickListener() still opens PetDetailsActivity.
+        bindRowClick(convertView, parent, position);
+
         Pet pet = getItem(position);
         if (pet == null) {
+            holder.emoji.setText("");
+            holder.info.setText("");
+            holder.status.setText("");
             return convertView;
         }
 
@@ -52,6 +60,16 @@ public class PetAdapter extends ArrayAdapter<Pet> {
                 Color.parseColor(PetLabels.colorForStatus(pet.getStatus())));
 
         return convertView;
+    }
+
+    /** Keeps MaterialCardView ripple + ListView item clicks working together. */
+    private void bindRowClick(View row, ViewGroup parent, int position) {
+        row.setOnClickListener(v -> {
+            if (v.isEnabled() && parent instanceof AdapterView<?>) {
+                ((AdapterView<?>) parent).performItemClick(v, position, getItemId(position));
+            }
+        });
+        row.setEnabled(true);
     }
 
     static class ViewHolder {

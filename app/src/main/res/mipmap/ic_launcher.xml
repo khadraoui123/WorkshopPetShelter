@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- E:\WorkshopPetShelter\app\src\main\res\mipmap\ic_launcher.xml -->
+<!-- Legacy fallback for API 24-25, which do not render adaptive-icon XML. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/ic_launcher_background" />
+    <item android:drawable="@drawable/ic_launcher_foreground" />
+</layer-list>
